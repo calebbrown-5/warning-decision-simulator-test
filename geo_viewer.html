@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data: blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Warning Decision Simulator · v3.33.0 STATIC PROTOTYPE</title>
+<html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://wds-training-coordinator.calebbrown225.workers.dev wss://wds-training-coordinator.calebbrown225.workers.dev; img-src 'self' data: blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Warning Decision Simulator · v3.34.2 COORDINATED TRAINING PREVIEW</title>
 <style>
 :root{color-scheme:dark;--bg:#0b111c;--panel:#111b29;--border:#28364a;--fg:#eaf2fc;--dim:#9eb0c5;--accent:#65acec;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -568,8 +568,39 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 @media(max-width:730px){.radar-pick-main{grid-template-columns:1fr}.radar-pick-results{max-height:180px}.radar-pick-map{min-height:220px}}
 
 .hosted-notice{background:#1b3448;border-bottom:1px solid #476d83;color:#e4f6ff;padding:5px 16px;font-size:11px;text-align:center}
+
+
+/* v3.34.2: visible coordinated session controls; original radar workspace untouched. */
+#wdsCloudPanel[hidden],#wdsCloudNoteBox[hidden],#wdsCloudRosterBox[hidden]{display:none!important}
+#wdsCloudPanel{flex:0 0 auto;border-bottom:1px solid #4d7294;background:#132c41;padding:9px 14px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between;font-size:12px}
+#wdsCloudPanel .wds-cloud-section{display:flex;flex-direction:column;gap:6px;min-width:180px;max-width:600px}
+#wdsCloudPanel .wds-cloud-title{font-weight:800;color:#e4f3fd}
+#wdsCloudPanel .wds-cloud-note{font-size:10px;color:#c3d7e5;line-height:1.4}
+#wdsCloudPanel .wds-cloud-controls{display:flex;flex-wrap:wrap;gap:6px}
+#wdsCloudPanel .wds-cloud-controls button{padding:6px 9px}
+#wdsCloudPanel input{padding:6px;width:min(300px,100%);font-size:12px}
+#wdsCloudConnection[data-state='connected']{color:#a9eed1}
+#wdsCloudConnection[data-state='offline']{color:#ffc6a7}
+#wdsCloudRoster{max-height:85px;overflow:auto;font-size:10px;color:#d0e2ef;line-height:1.5}
 </style></head>
-<body><header><div><h1>Warning Decision Simulator <span class="tag">STATIC PROTOTYPE v3.33.0</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>STATIC HOSTING PROTOTYPE</b> · Single-browser simulated training only · Not synchronized across computers · <a href="./index.html" style="color:#b6e7ff">Choose another prepared case</a></div>
+<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.2 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
+<section id="wdsCloudPanel" hidden aria-label="Cloudflare coordinated training session">
+ <div class="wds-cloud-section">
+  <div class="wds-cloud-title">COORDINATED TRAINING · <span id="wdsCloudRole">—</span></div>
+  <div><span id="wdsCloudConnection" data-state="offline">Connecting…</span> · <span id="wdsCloudState">Waiting for session</span></div>
+  <div class="wds-cloud-note" id="wdsCloudStatus" role="status" aria-live="polite">Waiting for invitation…</div>
+ </div>
+ <div class="wds-cloud-section"><div class="wds-cloud-title">Shared clock · <span id="wdsCloudClock">—</span></div>
+  <div id="wdsCloudControls" class="wds-cloud-controls"></div>
+ </div>
+ <div class="wds-cloud-section" id="wdsCloudNoteBox" hidden>
+  <label for="wdsCloudGroupNote" class="wds-cloud-title">Private group checkpoint (140 characters)</label>
+  <div class="wds-cloud-controls"><input id="wdsCloudGroupNote" maxlength="140" autocomplete="off" placeholder="Progress note for facilitator"/><button id="wdsCloudSave" type="button">Save checkpoint</button></div>
+  <div class="wds-cloud-note">Only your group and facilitator receive this checkpoint. Warnings and tracks still remain on this workstation in v3.34.2.</div>
+ </div>
+ <div class="wds-cloud-section" id="wdsCloudRosterBox" hidden><div class="wds-cloud-title">Facilitator checkpoint overview</div><div id="wdsCloudRoster"></div></div>
+</section>
+
 <main>
 <section class="workstation">
 <div class="ws-header"><div><b>Radar workspace</b> <span class="muted small" id="activeReadout">Active pane A</span> <span class="flag" id="sharedTilt">Tilt 0.50° · synchronized</span> <span class="warning-map-hint">Click a colored warning polygon to manage its SVS</span></div><div class="layout-buttons"><button type="button" data-layout-target="1">1 panel</button><button type="button" data-layout-target="2">2 panels</button><button type="button" data-layout-target="4">4 panels</button></div></div>
@@ -1620,7 +1651,7 @@ function refreshHazardConsole(){
 function refreshExercisePanel(){
  if(!Number.isFinite(exerciseClockMs))return;
  $('exerciseClock').textContent=exerciseZoneTime(exerciseClockMs);
- $('exerciseDay').textContent='EXERCISE DAY '+exerciseDayNumber(exerciseClockMs)+' · original calendar date hidden · clock '+(exerciseTickTimer?'RUNNING':'PAUSED');
+ $('exerciseDay').textContent='EXERCISE DAY '+exerciseDayNumber(exerciseClockMs)+' · original calendar date hidden · clock '+(wdsSession?(wdsSession.snapshot?.status||'CONNECTING').toUpperCase():(exerciseTickTimer?'RUNNING':'PAUSED'));
  $('displayTime').textContent=exerciseZoneTime(exerciseClockMs);
  $('exercisePlay').textContent=exerciseTickTimer?'Ⅱ Pause':'▶ Start';
  const active=stormTracks.filter(t=>t.issued&&!isWarningEnded(t)).length,expired=stormTracks.filter(t=>isWarningEnded(t)).length;
@@ -5142,6 +5173,7 @@ function prepareWarningFromTrack(){
  openHid();
 }
 function issueSelectedTrainingWarning(){
+ if(!wdsMayIssueTraining())return;
  if(trackDraft){setTrackStatus('Accept the storm track before simulated warning issuance.');return;}
  const t=selectedTrack();
  if(!t||t.issued){setTrackStatus('Select an unissued draft polygon first.');return;}
@@ -7173,6 +7205,7 @@ function svsPreview(){
  $('hidStatus').textContent=partial?'Partial CAN/CON generated. Select a reason and review the editable Ending Synopsis before simulated issuance.':'Simulated SVS preview ready. Exercise time continues to advance; issuance timestamp will reflect the clock when Issue is clicked.';
 }
 function svsIssue(){
+ if(!wdsMayIssueTraining())return;
  const t=svsActiveWarning();if(!t)return;const f=svsCurrentFields(),err=svsValidation(t,f,true);
  if(err){hidShowBlockingAlert(err,hidBlockingTarget(err));$('hidManageIssueBtn').disabled=true;return;}
  if(!svsPreviewFingerprint||svsPreviewFingerprint!==svsFrozenSnapshot(t,f)){$('hidStatus').textContent='SVS has changed since Preview. Preview again.';$('hidManageIssueBtn').disabled=true;return;}
@@ -7266,6 +7299,7 @@ function hidPreview(){
  hidSetStage('preview');
 }
 function hidIssue(){
+ if(!wdsMayIssueTraining())return;
  const t=selectedTrack(),d=hidCollect();if(!t||t.issued)return;
  const err=hidValidate(t,d);if(err){hidShowBlockingAlert(err,hidBlockingTarget(err));return;}
  if(!hidPreviewFingerprint||hidPreviewFingerprint!==hidSnapshot(t,d)){
@@ -7538,8 +7572,183 @@ if(ACTIVE_SCENARIO_ID){
  $('facilitatorVelocityCoverage').textContent=nVel?`Base velocity: ${nVel}/${manifest.volumes.length} volumes · SRV uses the same velocity moment.`:'VELOCITY MISSING: no usable velocity gates in the prepared manifest. Re-prepare after patching and report the result.';
 }$('volume').replaceChildren();for(let i=0;i<manifest.volumes.length;i++){const v=manifest.volumes[i],o=document.createElement('option');o.value=String(i);o.textContent=v.volume_start_utc.slice(11,19)+'–'+v.volume_end_utc.slice(11,19)+'Z';$('volume').add(o);}
 $('timeline').max='0';$('beginTime').textContent='First available scan';$('endTime').textContent='Future scans locked';initExerciseClock();
-sharedAngle=nearestCommonTilt(.5);refreshRadarAvailability();for(const p of panes)targetSweep(p,sharedAngle);initialized=true;setLayout(1);setVolume(0);loadStaticBasemap();await loadScenarioLsrs();refreshTrackControls();requestTrackPaint();$('status').textContent='Training mode ready · exercise clock paused · future radar cuts locked.';
+sharedAngle=nearestCommonTilt(.5);refreshRadarAvailability();for(const p of panes)targetSweep(p,sharedAngle);initialized=true;setLayout(1);setVolume(0);loadStaticBasemap();await loadScenarioLsrs();refreshTrackControls();requestTrackPaint();$('status').textContent='Training mode ready · future radar cuts locked.';if(wdsSession?.snapshot)wdsClockFrame(true);
 }catch(err){console.error(err);$('status').textContent='Initialization failed: '+err.message;}}
+/* WDS v3.34.2: browser coordinator bridge. Training-only. No operational routes.
+   Role tokens are held in memory only and removed from the address bar promptly. */
+const WDS_WORKER_ORIGIN='https://wds-training-coordinator.calebbrown225.workers.dev';
+let wdsSession=null;
+function wdsSetStatus(message){const el=$('wdsCloudStatus');if(el)el.textContent=message;}
+function wdsMayIssueTraining(){
+ if(!wdsSession)return true; // Original standalone local-only experience.
+ if(wdsSession.role!=='facilitator'&&wdsSession.connected&&wdsSession.snapshot?.status==='running')return true;
+ const why=!wdsSession.connected?'Coordinator disconnected: simulated issuance blocked until reconnection.':
+  wdsSession.role==='facilitator'?'Facilitator role cannot issue simulated trainee warnings.':
+  'Exercise not running: simulated issuance blocked.';
+ wdsSetStatus(why);
+ const hid=$('hidStatus');if(hid&&$('hidDialog').open)hid.textContent=why;
+ return false;
+}
+function wdsParseInvitation(){
+ const raw=location.hash.slice(1);
+ if(!raw.includes('wds-room='))return null;
+ // Remove the bearer credential from browser navigation before opening sockets.
+ history.replaceState(null,'',location.pathname+location.search);
+ const p=new URLSearchParams(raw);
+ const room=p.get('wds-room'),role=p.get('wds-role'),token=p.get('wds-token');
+ if(!/^[a-f0-9]{32}$/.test(room||'')||
+    !/^(facilitator|group[A-D])$/.test(role||'')||
+    !/^[a-f0-9]{64}$/.test(token||''))return {error:'Invalid coordinated-exercise invitation.'};
+ return {room,role,token,connected:false,snapshot:null,groups:{},lastPong:0,
+  socket:null,retryMs:1000,reconnectTimer:null,clockTimer:null,heartbeatTimer:null,clockReceivedAt:0};
+}
+function wdsButton(text,onclick,disabled=false){
+ const b=document.createElement('button');b.type='button';b.textContent=text;b.disabled=disabled;b.onclick=onclick;return b;
+}
+function wdsRender(){
+ if(!wdsSession)return;
+ const s=wdsSession,panel=$('wdsCloudPanel');panel.hidden=false;
+ $('wdsCloudRole').textContent=s.role==='facilitator'?'Facilitator':s.role.replace('group','Group ');
+ $('wdsCloudConnection').textContent=s.connected?'Connected to coordinator':'Disconnected / reconnecting';
+ $('wdsCloudConnection').dataset.state=s.connected?'connected':'offline';
+ const state=s.snapshot?.status||'connecting';
+ $('wdsCloudState').textContent='Exercise: '+state.toUpperCase();
+ $('wdsCloudClock').textContent=s.snapshot&&Number.isFinite(exerciseClockMs)?exerciseZoneTime(exerciseClockMs):'—';
+ const ctrls=$('wdsCloudControls');ctrls.replaceChildren();
+ if(s.role==='facilitator'){
+  for(const [label,action,enabled] of [
+   ['Start','start',state==='waiting'],['Pause','pause',state==='running'],
+   ['Resume','resume',state==='paused'],['End exercise','end',!['ended','connecting'].includes(state)]
+  ]){
+   ctrls.append(wdsButton(label,()=>{
+    if(action==='end'&&!confirm('End this synthetic coordinated exercise for every group? This cannot be resumed.'))return;
+    wdsSend({type:'control',action});
+   },!s.connected||!enabled));
+  }
+ }else{
+  if(document.activeElement!==$('wdsCloudGroupNote'))
+   $('wdsCloudGroupNote').value=s.groups[s.role]?.note??$('wdsCloudGroupNote').value;
+  $('wdsCloudSave').disabled=!s.connected||state==='ended';
+ }
+ const roster=$('wdsCloudRoster');roster.replaceChildren();
+ if(s.role==='facilitator'){
+  for(const [role,data] of Object.entries(s.groups)){
+   const line=document.createElement('div');
+   const note=String(data?.note||'No checkpoint');
+   line.textContent=role.replace('group','Group ')+': '+(data?.connected?'online':'offline')+' · '+note;
+   roster.append(line);
+  }
+ }
+}
+function wdsSend(msg){
+ const s=wdsSession;if(!s?.connected||s.socket?.readyState!==WebSocket.OPEN)return false;
+ s.socket.send(JSON.stringify(msg));return true;
+}
+function wdsSyncClock(snapshot){
+ const s=wdsSession;if(!s||!snapshot||!Number.isFinite(snapshot.clockMs)||
+   !Number.isFinite(snapshot.startMs)||!Number.isFinite(snapshot.endMs))return;
+ if(s.snapshot&&Number(snapshot.revision)<Number(s.snapshot.revision))return;
+ s.snapshot=snapshot;s.clockReceivedAt=performance.now();
+ const localRate=$('exerciseRate');if(localRate)localRate.value=String(snapshot.rate);
+ // Cloudflare is authoritative for exercise time. The local ticker is not used.
+ if(exerciseTickTimer!==null)stopExercisePlay();
+ exerciseStartMs=snapshot.startMs;exerciseEndMs=snapshot.endMs;
+ wdsClockFrame(true);
+}
+function wdsClockFrame(force=false){
+ const s=wdsSession;if(!s?.connected||!s.snapshot||!initialized)return;
+ const snap=s.snapshot;
+ const elapsed=snap.status==='running'?Math.max(0,performance.now()-s.clockReceivedAt)*snap.rate:0;
+ const next=Math.min(snap.endMs,Math.max(snap.startMs,snap.clockMs+elapsed));
+ if(!Number.isFinite(exerciseClockMs)||force||next<exerciseClockMs){
+  exerciseClockMs=next;refreshRadarAvailability();reconcileExerciseExpirations();
+  refreshExercisePanel();refreshTrackControls();requestTrackPaint();
+ }else if(next>exerciseClockMs){advanceExerciseClock(next-exerciseClockMs);}
+ $('wdsCloudClock').textContent=exerciseZoneTime(exerciseClockMs);
+}
+function wdsDisconnect(reason){
+ const s=wdsSession;if(!s)return;
+ s.connected=false;
+ for(const id of ['hidIssueBtn','hidManageIssueBtn']){const btn=$(id);if(btn)btn.disabled=true;}
+ wdsSetStatus(reason||'Disconnected; exercise time continues on the server. Simulated issuance is blocked.');
+ wdsRender();
+}
+function wdsOpenSocket(){
+ const s=wdsSession;if(!s)return;
+ const url=WDS_WORKER_ORIGIN.replace(/^https:/,'wss:')+'/api/exercises/'+s.room+'/connect';
+ const ws=new WebSocket(url);s.socket=ws;
+ wdsSetStatus('Connecting to the training coordinator…');
+ ws.onopen=()=>{
+  if(s.socket!==ws)return;
+  ws.send(JSON.stringify({type:'auth',token:s.token}));
+ };
+ ws.onmessage=event=>{
+  if(s.socket!==ws)return;
+  let msg;try{msg=JSON.parse(event.data);}catch{return;}
+  if(msg.type==='error'){
+   if(/Invalid exercise credential|Authentication required/i.test(String(msg.message||'')))s.rejected=true;
+   wdsSetStatus('Coordinator: '+String(msg.message||'Error'));
+   if(!s.connected)ws.close();return;
+  }
+  if(msg.type==='welcome'){
+   if(msg.role!==s.role||msg.snapshot?.caseId!==ACTIVE_SCENARIO_ID){
+    wdsSetStatus('Role or prepared-case mismatch. Connection rejected.');
+    s.token=null;s.rejected=true;ws.close();return;
+   }
+   s.connected=true;s.retryMs=1000;s.lastPong=Date.now();
+   wdsSetStatus('Connected. Radar navigation is independent; exercise clock is shared.');
+  }
+  if(['welcome','state','pong'].includes(msg.type)&&s.connected){
+   s.lastPong=Date.now();s.groups=msg.groups||s.groups;
+   wdsSyncClock(msg.snapshot);wdsRender();
+  }
+ };
+ ws.onerror=()=>{if(s.socket===ws)wdsDisconnect('Connection interrupted. Reconnecting…');};
+ ws.onclose=()=>{
+  if(s.socket!==ws)return;
+  wdsDisconnect('Disconnected: simulated issuance blocked; server clock continues.');
+  if(!s.rejected){
+   clearTimeout(s.reconnectTimer);
+   s.reconnectTimer=setTimeout(wdsOpenSocket,s.retryMs);
+   s.retryMs=Math.min(15000,Math.round(s.retryMs*1.7));
+  }
+ };
+}
+function wdsBeginSession(){
+ const invitation=wdsParseInvitation();if(!invitation)return;
+ $('wdsCloudPanel').hidden=false;
+ if(invitation.error){wdsSetStatus(invitation.error);return;}
+ wdsSession=invitation;
+ $('wdsCloudNoteBox').hidden=invitation.role==='facilitator';
+ $('wdsCloudRosterBox').hidden=invitation.role!=='facilitator';
+ $('openFacilitator').hidden=true;
+ // Preserve the offline standalone clock controls for standalone only.
+ for(const id of ['exercisePlay','exerciseAdvance1','exerciseAdvance5','exerciseRate',
+   'facilitatorPlay','facilitatorAdvance1','facilitatorAdvance5','facilitatorRate',
+   'facilitatorReset','facilitatorImport','reviewImport']){
+   const e=$(id);if(e)e.disabled=true;
+ }
+ const notice=document.querySelector('.hosted-notice');
+ if(notice)notice.textContent='COORDINATED TRAINING SESSION · Shared Cloudflare exercise clock · No operational dissemination · Group warning histories remain local in this version.';
+ $('wdsCloudSave').onclick=()=>{
+  const note=$('wdsCloudGroupNote').value.slice(0,140);
+  if(wdsSend({type:'checkpoint',note}))wdsSetStatus('Checkpoint submitted to coordinator.');
+ };
+ s_init();
+ function s_init(){
+  wdsRender();wdsOpenSocket();
+  invitation.clockTimer=setInterval(()=>wdsClockFrame(),250);
+  invitation.heartbeatTimer=setInterval(()=>{
+   if(!invitation.connected)return;
+   if(Date.now()-invitation.lastPong>18000){
+    invitation.socket?.close();wdsDisconnect('Heartbeat timed out. Reconnecting…');return;
+   }
+   wdsSend({type:'ping'});
+  },5000);
+ }
+}
+
+wdsBeginSession();
 init();
 
 </script>

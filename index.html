@@ -1,14 +1,107 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Warning Decision Simulator · Static Prototype</title>
+<html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://wds-training-coordinator.calebbrown225.workers.dev; img-src 'self' data:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Warning Decision Simulator · v3.34.2 Training Preview</title>
 <style>
 :root{color-scheme:dark;font:15px system-ui,-apple-system,"Segoe UI",sans-serif;background:#0b1521;color:#ecf5ff}*{box-sizing:border-box}body{margin:0;min-height:100vh}.wrap{max-width:900px;margin:auto;padding:42px 22px}h1{font-size:27px;margin:0 0 8px}.sub{color:#b4c9da;line-height:1.55}.tag{font-size:12px;color:#9bd1fc;font-weight:700;text-transform:uppercase;letter-spacing:1px}.notice{margin:24px 0;padding:16px;background:#152d42;border:1px solid #456987;border-radius:10px;line-height:1.6}#cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:15px;margin-top:20px}.case{background:#132333;border:1px solid #385369;border-radius:10px;padding:20px}.case h3{margin:0 0 10px;font-size:19px}.case dl{display:grid;grid-template-columns:110px 1fr;gap:8px;font-size:13px}.case dt{color:#a5bed1}.case dd{margin:0;overflow-wrap:anywhere}a.launch{display:inline-block;background:#276695;border:1px solid #66baff;border-radius:7px;padding:10px 15px;color:white;text-decoration:none;font-weight:bold;margin-top:16px}a.launch:hover{background:#367bb0}footer{margin-top:36px;color:#99afc2;font-size:12px;line-height:1.6}code{background:#1a3246;padding:2px 4px;border-radius:4px}
-</style></head><body><main class="wrap"><div class="tag">Static-host compatibility test · v3.33.0</div><h1>Warning Decision Simulator</h1><p class="sub">Load an independently prepared historical radar case directly in your browser. This prototype does not require the simulator’s Python server for radar playback.</p><div class="notice"><b>TRAINING AND DEVELOPMENT ONLY.</b> No operational warning dissemination. This is <b>not</b> a multiplayer or synchronized facilitator session. Exercise decisions remain inside each browser unless manually exported as JSON. Do not use this prototype for a coordinated exercise.</div><h2>Published prepared cases</h2><p id="status" class="sub">Loading available cases…</p><div id="cases"></div><footer>Case preparation remains in the standalone local Windows simulator. Prepared cases can be published with <code>EXPORT_STATIC_CASE.py</code>. The site is read-only, and opening a case does not contact operational NWS systems.</footer></main>
+
+#wdsHost{margin-top:32px;padding:20px;border:1px solid #446c8c;background:#112b40;border-radius:10px}
+#wdsHost[hidden]{display:none}
+#wdsHost h2{margin:0 0 8px}
+#wdsHost p{font-size:13px;line-height:1.6;color:#c2d6e7}
+#wdsHost .wds-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:14px 0}
+#wdsHost label{display:grid;gap:5px;font-size:12px;color:#c7dcea}
+#wdsHost select,#wdsHost input{width:100%;background:#081a2b;color:#e6f5ff;border:1px solid #5b7c98;border-radius:5px;padding:9px}
+#wdsHost button{padding:9px 12px;background:#235c88;color:#f1f8fe;border:1px solid #66a8d1;border-radius:6px;cursor:pointer;font-weight:650}
+#wdsHost button:disabled{opacity:.5}
+#wdsInvites{margin-top:12px;display:grid;gap:8px}
+.wds-invite{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:7px;background:#0c2133;border:1px solid #375a76;border-radius:6px;font-size:13px}
+.wds-invite strong{min-width:95px}
+</style></head><body><main class="wrap"><div class="tag">Training preview · v3.34.2</div><h1>Warning Decision Simulator</h1><p class="sub">Load an independently prepared historical radar case directly in your browser. This prototype does not require the simulator’s Python server for radar playback.</p><div class="notice"><b>TRAINING AND DEVELOPMENT ONLY.</b> No operational warning dissemination. Standalone links below are <b>not</b> multiplayer. Use the coordinated exercise creator below for shared-clock training. Exercise decisions remain inside each browser unless manually exported as JSON. Do not use this prototype for a coordinated exercise.</div><h2>Published prepared cases</h2><p id="status" class="sub">Loading available cases…</p><div id="cases"></div>
+<section id="wdsHost" hidden aria-label="Create coordinated training exercise"><h2>Host a coordinated training exercise</h2>
+<p>Experimental multi-group coordinator for prepared cases. One facilitator controls the clock; 2–4 groups navigate radar independently. Group checkpoints are private, but full warning/track histories are <b>not yet uploaded or synchronized</b>. All products remain simulated and training-only.</p>
+<div class="wds-fields">
+<label>Prepared case<select id="wdsCase"></select></label>
+<label>Forecaster groups<select id="wdsGroups"><option value="2">2 groups</option><option value="3">3 groups</option><option value="4" selected>4 groups</option></select></label>
+<label>Exercise speed<select id="wdsRate"><option value="1">1×</option><option value="5">5×</option><option value="20" selected>20×</option><option value="60">60×</option></select></label>
+<label>Private facilitator setup key<input id="wdsSetupKey" type="password" autocomplete="off" placeholder="Cloudflare SETUP_KEY"/></label>
+</div><button id="wdsCreate" type="button">Create coordinated exercise</button>
+<p id="wdsHostStatus" role="status" aria-live="polite">Setup key is sent only to your Cloudflare coordinator; it is not saved by this page.</p><div id="wdsInvites"></div>
+<p>Each private invitation contains a role credential. Share links only with their intended group, using an approved method. This public demo is not authorized for operational NWS use or sensitive exercise material.</p>
+</section><footer>Case preparation remains in the standalone local Windows simulator. Prepared cases can be published with <code>EXPORT_STATIC_CASE.py</code>. Radar case files are read-only. Coordinated sessions communicate only with the training coordinator and never contact operational NWS systems.</footer></main>
 <script>
 (async()=>{const status=document.getElementById('status'),container=document.getElementById('cases');try{
 const response=await fetch('./cases.json',{cache:'no-store'});if(!response.ok)throw Error('Catalog HTTP '+response.status);
 const data=await response.json();if(data.schema!=='warning-simulator-hosted-catalog-v1'||!Array.isArray(data.cases))throw Error('Invalid hosted catalog');
 if(!data.cases.length){status.textContent='No radar case has been exported yet. Use EXPORT_STATIC_CASE.py with a completed prepared-case directory.';return;}
-status.textContent=data.cases.length+' prepared historical case(s) published.';
+status.textContent=data.cases.length+' prepared historical case(s) published.';wdsRegisterCases(data.cases);
 for(const c of data.cases){if(!/^[a-f0-9]{16}$/.test(c.id))continue;const section=document.createElement('section');section.className='case';const h=document.createElement('h3');h.textContent=String(c.name||('Case '+c.id));section.append(h);const dl=document.createElement('dl');for(const [label,v] of [['Historical radar',c.source],['Destination',c.destination],['Training WFO',c.wfo],['First scan (UTC)',c.firstUtc],['Last scan (UTC)',c.lastUtc],['Volumes',c.volumes]]){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=String(v||'—');dl.append(dt,dd);}section.append(dl);const link=document.createElement('a');link.className='launch';link.textContent='Open standalone viewer';link.href='./geo_viewer.html?case='+encodeURIComponent(c.id);section.append(link);container.append(section);}
 }catch(e){status.textContent='Cannot load the case catalog: '+e.message+'. Serve this folder over HTTP(S), not file://.';}})();
+/* WDS v3.34.2 — create synthetic coordinated training sessions (facilitator only). */
+const WDS_COORDINATOR='https://wds-training-coordinator.calebbrown225.workers.dev';
+let wdsAvailableCases=[];
+function wdsClockUtc(value){
+ const text=String(value||'').trim();
+ return Date.parse(/(?:Z|[+-]\d\d:\d\d)$/i.test(text)?text:text+'Z');
+}
+function wdsLobbyStatus(value){document.getElementById('wdsHostStatus').textContent=value;}
+function wdsRegisterCases(cases){
+ wdsAvailableCases=cases.filter(c=>/^[0-9a-f]{16}$/.test(c.id));
+ const selector=document.getElementById('wdsCase');selector.replaceChildren();
+ for(const c of wdsAvailableCases){
+  const option=document.createElement('option');option.value=c.id;
+  option.textContent=String(c.name||c.id).slice(0,120);selector.append(option);
+ }
+ document.getElementById('wdsHost').hidden=!wdsAvailableCases.length;
+}
+async function wdsCopyInvite(value,button){
+ try{await navigator.clipboard.writeText(value);button.textContent='Copied';}
+ catch{wdsLobbyStatus('Clipboard unavailable. Open this page using HTTPS and allow clipboard access. Credentials were not printed.');}
+}
+async function wdsCreateExercise(){
+ const button=document.getElementById('wdsCreate');
+ const id=document.getElementById('wdsCase').value;
+ const c=wdsAvailableCases.find(x=>x.id===id);
+ const input=document.getElementById('wdsSetupKey');
+ const key=input.value.trim();
+ const groups=Number(document.getElementById('wdsGroups').value);
+ const rate=Number(document.getElementById('wdsRate').value);
+ if(!c){wdsLobbyStatus('Select a prepared case.');return;}
+ const first=wdsClockUtc(c.firstUtc),last=wdsClockUtc(c.lastUtc);
+ if(!Number.isFinite(first)||!Number.isFinite(last)||last<first){wdsLobbyStatus('Case catalog lacks a valid UTC scan window.');return;}
+ const end=Math.max(last+30*60000,first+2*60000);
+ if(end-first>72*3600000){wdsLobbyStatus('Case exceeds the 72-hour coordinator window.');return;}
+ if(key.length<24){wdsLobbyStatus('Enter the private facilitator SETUP_KEY (not saved).');return;}
+ button.disabled=true;wdsLobbyStatus('Creating synthetic exercise…');
+ try{
+  const response=await fetch(WDS_COORDINATOR+'/api/exercises',{
+   method:'POST',headers:{'content-type':'application/json','x-wds-setup-key':key},
+   body:JSON.stringify({caseId:id,title:String(c.name||'Prepared training case'),startMs:first,endMs:end,groups,rate})
+  });
+  const data=await response.json();
+  if(!response.ok)throw Error(String(data.error||'HTTP '+response.status));
+  if(!/^[0-9a-f]{32}$/.test(data.roomId||'')||!data.tokens)throw Error('Unexpected exercise response');
+  input.value='';
+  const inviteArea=document.getElementById('wdsInvites');inviteArea.replaceChildren();
+  const heading=document.createElement('p');heading.textContent='Session created. Distribute each bearer invitation privately. Keep a copy of the facilitator link; links are not stored by this page.';inviteArea.append(heading);
+  const roles=['facilitator',...Array.from({length:groups},(_,i)=>'group'+String.fromCharCode(65+i))];
+  for(const role of roles){
+   const token=data.tokens[role];if(!/^[0-9a-f]{64}$/.test(token||''))continue;
+   const url=new URL('./geo_viewer.html',document.baseURI);
+   url.searchParams.set('case',id);
+   url.hash=new URLSearchParams({'wds-room':data.roomId,'wds-role':role,'wds-token':token}).toString();
+   const row=document.createElement('div');row.className='wds-invite';
+   const label=document.createElement('strong');label.textContent=role==='facilitator'?'Facilitator':role.replace('group','Group ');
+   const copy=document.createElement('button');copy.type='button';copy.textContent='Copy private link';copy.onclick=()=>wdsCopyInvite(url.href,copy);
+   row.append(label,copy);
+   if(role==='facilitator'){
+    const open=document.createElement('button');open.type='button';open.textContent='Open facilitator';
+    open.onclick=()=>window.open(url.href,'_blank','noopener,noreferrer');row.append(open);
+   }
+   inviteArea.append(row);
+  }
+  wdsLobbyStatus('Exercise created successfully. Session begins WAITING until facilitator presses Start.');
+ }catch(error){wdsLobbyStatus('Creation failed: '+error.message);}
+ finally{button.disabled=false;input.value='';}
+}
+document.getElementById('wdsCreate').addEventListener('click',wdsCreateExercise);
+
 </script></body></html>
