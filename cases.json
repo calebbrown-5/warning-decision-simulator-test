@@ -1,0 +1,16 @@
+{
+  "schema": "warning-simulator-hosted-catalog-v1",
+  "cases": [
+    {
+      "id": "1fdcdaeeeca6f7d3",
+      "name": "KTWX → KLNX · 2026-04-14 UTC",
+      "source": "KTWX",
+      "destination": "KLNX",
+      "wfo": "LBF",
+      "firstUtc": "2026-04-14T00:04:13.686Z",
+      "lastUtc": "2026-04-14T01:04:58.340Z",
+      "volumes": 9,
+      "relocated": true
+    }
+  ]
+}
