@@ -584,8 +584,18 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 #wdsCloudRoster{max-height:85px;overflow:auto;font-size:10px;color:#d0e2ef;line-height:1.5}
 #wdsCloudRetry[hidden]{display:none!important}
 #wdsCloudRetry{padding:5px 10px;background:#284a66;border:1px solid #75afd4;color:#f0f8ff;border-radius:5px;width:fit-content}
+.wds-live-columns{display:grid;grid-template-columns:minmax(215px,34%) minmax(0,1fr);gap:12px;min-height:350px;margin-top:12px}
+.wds-live-list{display:flex;flex-direction:column;gap:6px;max-height:570px;overflow:auto;border:1px solid #395975;background:#0a1b2b;border-radius:6px;padding:8px;color:#c1dbe9;font-size:11px}
+.wds-live-list button{display:grid;gap:4px;text-align:left;background:#18374e;border:1px solid #42627f;border-radius:5px;padding:9px 10px;color:#e7f6ff;font-size:11px}
+.wds-live-list button[aria-current=true]{border-color:#a2dfff;background:#234e68}
+.wds-live-list small{color:#bfd7e7;font-size:10px}
+.wds-live-detail{min-width:0;display:grid;gap:9px;align-content:start}
+.wds-live-detail pre{max-height:380px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+#wdsCloudLiveLaunch[hidden]{display:none}
+@media(max-width:760px){.wds-live-columns{grid-template-columns:1fr}.wds-live-list{max-height:240px}}
+
 </style></head>
-<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.3 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
+<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.4 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
 <section id="wdsCloudPanel" hidden aria-label="Cloudflare coordinated training session">
  <div class="wds-cloud-section">
   <div class="wds-cloud-title">COORDINATED TRAINING · <span id="wdsCloudRole">—</span></div>
@@ -599,9 +609,9 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
  <div class="wds-cloud-section" id="wdsCloudNoteBox" hidden>
   <label for="wdsCloudGroupNote" class="wds-cloud-title">Private group checkpoint (140 characters)</label>
   <div class="wds-cloud-controls"><input id="wdsCloudGroupNote" maxlength="140" autocomplete="off" placeholder="Progress note for facilitator"/><button id="wdsCloudSave" type="button">Save checkpoint</button></div>
-  <div class="wds-cloud-note">Only your group and facilitator receive this checkpoint. Warnings and tracks still remain on this workstation in v3.34.2.</div>
+  <div class="wds-cloud-note">Only your group and facilitator receive this checkpoint. Issued warning decisions are also sent privately to the facilitator. Editable storm tracks remain local.</div>
  </div>
- <div class="wds-cloud-section" id="wdsCloudRosterBox" hidden><div class="wds-cloud-title">Facilitator checkpoint overview</div><div id="wdsCloudRoster"></div></div>
+ <div class="wds-cloud-section" id="wdsCloudRosterBox" hidden><div class="wds-cloud-title">Facilitator checkpoint overview</div><div id="wdsCloudRoster"></div><button id="wdsCloudLiveLaunch" type="button" hidden>Review live warnings</button></div>
 </section>
 
 <main>
@@ -811,7 +821,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
     </section>
   </div>
   <div class="facilitator-right">
-    <div class="lsr-tabs"><button type="button" id="facilitatorLibraryTab" aria-selected="false">Saved scenarios</button><button id="facilitatorDecisionsTab" aria-selected="true" type="button">Decision review</button><button id="facilitatorReportsTab" aria-selected="false" type="button">Storm reports / selection map</button><button type="button" id="facilitatorVerificationTab" aria-selected="false">Verification</button><button type="button" id="facilitatorAarTab" aria-selected="false">After-action replay</button></div>
+    <div class="lsr-tabs"><button type="button" id="facilitatorLiveTab" class="hidden" aria-selected="false">Live groups</button><button type="button" id="facilitatorLibraryTab" aria-selected="false">Saved scenarios</button><button id="facilitatorDecisionsTab" aria-selected="true" type="button">Decision review</button><button id="facilitatorReportsTab" aria-selected="false" type="button">Storm reports / selection map</button><button type="button" id="facilitatorVerificationTab" aria-selected="false">Verification</button><button type="button" id="facilitatorAarTab" aria-selected="false">After-action replay</button></div>
     <section id="facilitatorLibraryView" class="hidden" aria-label="Instructor saved scenario library">
       <p class="library-info">Prepared cases can be reopened without entering radar sites or UTC times. Report selections are saved with each prepared case; raw downloads can resume preparation. All dates and source radar IDs in this view are trainer-only.</p>
       <div class="library-toolbar"><input id="librarySearch" type="search" placeholder="Search names, radars, WFOs, dates…" aria-label="Search saved scenarios"><button id="libraryRefresh" type="button">Refresh library</button></div>
@@ -926,6 +936,22 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
     </details>
     <p class="aar-note aar-v3316-footer">Click the radar for report or warning details; drag to pan, scroll to zoom. ← / → step completed scans, ↑ / ↓ change elevation when the replay panel has focus. Full Exercise shows the broad CWA; Individual Warning centers that warning with optional pre/post context under More controls. All LSR markers reflect occurrence time, including reports never revealed to trainees. Historical review is local and read-only, never a warning issuance function.</p>
   </div>
+</section>
+<section id="facilitatorLiveView" class="hidden" aria-label="Live coordinated group warning activity">
+ <div class="facilitator-panel">
+  <h3>LIVE GROUP WARNING ACTIVITY · TRAINING ONLY</h3>
+  <div class="facilitator-muted">Actions submitted by authenticated groups appear here as they happen. Each group retains its own private training history; this instructor feed is NOT an operational warning console.</div>
+  <div id="wdsLiveTotals" class="facilitator-status" role="status">Waiting for coordinator activity…</div>
+  <div class="wds-live-columns">
+   <div id="wdsLiveEvents" class="wds-live-list" aria-label="Live training warning decisions">No issued warnings received.</div>
+   <div class="wds-live-detail">
+    <div id="wdsLiveSummary" class="facilitator-decision-summary">Select a group decision to inspect the training-only warning polygon and product text.</div>
+    <svg id="wdsLivePolygon" class="facilitator-polygon" viewBox="0 0 500 240" role="img" aria-label="Read-only warning polygon from a forecaster group"></svg>
+    <div class="facilitator-muted">Original geospatial coordinates are retained with the exercise activity. This quick view is an approximate geometry preview, not a full radar overlay.</div>
+    <pre id="wdsLiveBulletin" class="facilitator-bulletin"></pre>
+   </div>
+  </div>
+ </div>
 </section>
 <section id="facilitatorDecisionsView">
     <div><h3 style="margin:0 0 5px;font-size:13px">Decision Timeline</h3><div class="facilitator-muted">Select a decision to inspect its issued text and historical warning footprint. This does not change the trainee's current warning or exercise time.</div></div>
@@ -1575,6 +1601,7 @@ function recordExerciseEvent(t,action,atMs,detail=''){
  const event=Object.freeze({trackId:t.id,hazardType:t.hazardType,action,atMs,detail});
  if(!t.eventHistory)t.eventHistory=[];
  t.eventHistory.push(event);exerciseEvents.push(event);reviewTimelineSignature="";refreshExercisePanel();
+ if(typeof wdsSubmitDecision==='function')wdsSubmitDecision(t,event);
 }
 function reconcileExerciseExpirations(){
  for(const t of stormTracks){if(t.issued&&!isWarningCancelled(t)&&isWarningExpired(t)&&!t.expiredRecorded){t.expiredRecorded=true;t.lifecycle='EXPIRED';recordExerciseEvent(t,'EXPIRE',t.expiresAt,'Scheduled warning expiration');}}
@@ -2566,7 +2593,9 @@ function lsrRenderPreview(){
  }
  if(rows.length>80){const note=document.createElement('div');note.textContent=`${rows.length-80} additional scheduled reports not shown in this preview.`;container.append(note);}
 }
-function lsrChooseView(view){lsrView=['reports','decisions','library','verification','aar'].includes(view)?view:'decisions';
+function lsrChooseView(view){lsrView=['reports','decisions','library','verification','aar','live'].includes(view)?view:'decisions';
+ $('facilitatorLiveView').classList.toggle('hidden',lsrView!=='live');
+ $('facilitatorLiveTab').setAttribute('aria-selected',String(lsrView==='live'));
  $('facilitatorVerificationView').classList.toggle('hidden',lsrView!=='verification');
  $('facilitatorAarView').classList.toggle('hidden',lsrView!=='aar');
  if(lsrView!=='aar'&&$('facilitatorDialog').classList.contains('aar-widescreen')){$('facilitatorDialog').classList.remove('aar-widescreen');$('aarWideView').setAttribute('aria-pressed','false');$('aarWideView').textContent='⤢ Widen viewer';}
@@ -2719,6 +2748,7 @@ function attachLsrControls(){
  $('verificationRefresh').onclick=()=>renderVerification(true);
  $('verificationReportFilter').onchange=()=>renderVerification(true);
  $('verificationExport').onclick=exportVerificationResults;
+ $('facilitatorLiveTab').onclick=()=>lsrChooseView('live');
  $('facilitatorLibraryTab').onclick=()=>lsrChooseView('library');
  $('librarySearch').oninput=scenarioLibraryRender;
  $('libraryRefresh').onclick=scenarioLibraryRefresh;
@@ -3710,7 +3740,7 @@ function facilitatorOpen(){
  // A trainee draft stays untouched while the instructor reviews the same
  // browser session. Closing this view returns to the unfinished draft.
  $('facilitatorDialog').showModal();
- lsrChooseView('library');scenarioCheckBackend();
+ lsrChooseView(wdsSession?.role==='facilitator'?'live':'library');if(wdsSession?.role!=='facilitator')scenarioCheckBackend();
  lsrUpdateSetupSummary();renderLsrSelection();
  facilitatorRenderedSignature='';aarLastListSignature='';refreshFacilitatorConsole(true);
 }
@@ -7577,10 +7607,11 @@ if(ACTIVE_SCENARIO_ID){
 $('timeline').max='0';$('beginTime').textContent='First available scan';$('endTime').textContent='Future scans locked';initExerciseClock();
 sharedAngle=nearestCommonTilt(.5);refreshRadarAvailability();for(const p of panes)targetSweep(p,sharedAngle);initialized=true;setLayout(1);setVolume(0);loadStaticBasemap();await loadScenarioLsrs();refreshTrackControls();requestTrackPaint();$('status').textContent='Training mode ready · future radar cuts locked.';if(wdsSession?.snapshot)wdsClockFrame(true);
 }catch(err){console.error(err);$('status').textContent='Initialization failed: '+err.message;}}
-/* WDS v3.34.3: browser coordinator bridge. Training-only. No operational routes.
+/* WDS v3.34.3+: browser coordinator bridge. Training-only. No operational routes.
    Role tokens are held in memory only and removed from the address bar promptly. */
 const WDS_WORKER_ORIGIN='https://wds-training-coordinator.calebbrown225.workers.dev';
 let wdsSession=null;
+let wdsLiveSelectedId=null;
 function wdsSetStatus(message){const el=$('wdsCloudStatus');if(el)el.textContent=message;}
 function wdsMayIssueTraining(){
  if(!wdsSession)return true; // Original standalone local-only experience.
@@ -7603,7 +7634,7 @@ function wdsParseInvitation(){
     !/^(facilitator|group[A-D])$/.test(role||'')||
     !/^[a-f0-9]{64}$/.test(token||''))return {error:'Invalid coordinated-exercise invitation.'};
  return {room,role,token,connected:false,snapshot:null,groups:{},lastPong:0,
-  socket:null,retryMs:1000,reconnectTimer:null,connectTimer:null,clockTimer:null,heartbeatTimer:null,clockReceivedAt:0,rejected:false,superseded:false};
+  socket:null,retryMs:1000,reconnectTimer:null,connectTimer:null,clockTimer:null,heartbeatTimer:null,clockReceivedAt:0,rejected:false,superseded:false,activity:[],pending:new Map()};
 }
 function wdsButton(text,onclick,disabled=false){
  const b=document.createElement('button');b.type='button';b.textContent=text;b.disabled=disabled;b.onclick=onclick;return b;
@@ -7617,7 +7648,7 @@ function wdsRender(){
  $('wdsCloudConnection').dataset.state=s.connected?'connected':'offline';
  const state=s.snapshot?.status||'connecting';
  $('wdsCloudState').textContent='Exercise: '+state.toUpperCase();
- $('wdsCloudClock').textContent=s.snapshot&&Number.isFinite(exerciseClockMs)?exerciseZoneTime(exerciseClockMs):'—';
+ $('wdsCloudClock').textContent=s.snapshot&&Number.isFinite(exerciseClockMs)?exerciseZoneTime(exerciseClockMs)+' · '+s.snapshot.rate+'×':'—';
  const ctrls=$('wdsCloudControls');ctrls.replaceChildren();
  if(s.role==='facilitator'){
   for(const [label,action,enabled] of [
@@ -7636,6 +7667,8 @@ function wdsRender(){
  }
  const roster=$('wdsCloudRoster');roster.replaceChildren();
  if(s.role==='facilitator'){
+  $('wdsCloudLiveLaunch').hidden=false;
+  $('wdsCloudLiveLaunch').textContent='Review live warnings ('+s.activity.length+')';
   for(const [role,data] of Object.entries(s.groups)){
    const line=document.createElement('div');
    const note=String(data?.note||'No checkpoint');
@@ -7744,12 +7777,22 @@ function wdsOpenSocket(){
    if(!s.connected)wdsRetireSocket(ws,'Coordinator rejected connection');
    return;
   }
+  if(msg.type==='activity_history'&&Array.isArray(msg.events)){
+   s.activity=msg.events.filter(e=>e&&typeof e.id==='string');
+   wdsRenderActivity();wdsRender();
+  }
+  if(msg.type==='activity'&&msg.event?.id){
+   if(!s.activity.some(e=>e.id===msg.event.id))s.activity.push(msg.event);
+   wdsRenderActivity();wdsRender();
+  }
+  if(msg.type==='activity_ack'){s.pending.delete(msg.id);wdsSetStatus('Training decision saved in coordinator.');}
   if(msg.type==='welcome'){
    if(msg.role!==s.role||msg.snapshot?.caseId!==ACTIVE_SCENARIO_ID){
     s.token=null;wdsRetireSocket(ws,'Role or prepared-case mismatch; reopen the correct invitation.',{denied:true});return;
    }
    clearTimeout(s.connectTimer);s.connectTimer=null;
    s.connected=true;s.retryMs=1000;s.lastPong=Date.now();
+   for(const event of s.pending.values())wdsSend({type:'activity_submit',event});
    wdsSetStatus('Connected. Radar navigation is independent; exercise clock is shared.');
   }
   if(['welcome','state','pong'].includes(msg.type)&&s.connected){
@@ -7788,7 +7831,9 @@ function wdsBeginSession(){
  wdsSession=invitation;
  $('wdsCloudNoteBox').hidden=invitation.role==='facilitator';
  $('wdsCloudRosterBox').hidden=invitation.role!=='facilitator';
- $('openFacilitator').hidden=true;
+ $('openFacilitator').hidden=invitation.role!=='facilitator';
+ $('facilitatorLiveTab').classList.toggle('hidden',invitation.role!=='facilitator');
+ $('wdsCloudLiveLaunch').onclick=facilitatorOpen;
  // Preserve the offline standalone clock controls for standalone only.
  for(const id of ['exercisePlay','exerciseAdvance1','exerciseAdvance5','exerciseRate',
    'facilitatorPlay','facilitatorAdvance1','facilitatorAdvance5','facilitatorRate',
@@ -7796,7 +7841,7 @@ function wdsBeginSession(){
    const e=$(id);if(e)e.disabled=true;
  }
  const notice=document.querySelector('.hosted-notice');
- if(notice)notice.textContent='COORDINATED TRAINING SESSION · Shared Cloudflare exercise clock · No operational dissemination · Group warning histories remain local in this version.';
+ if(notice)notice.textContent='COORDINATED TRAINING SESSION · Shared Cloudflare exercise clock · No operational dissemination · Issued warning actions are shared privately with the facilitator; editable storm tracks remain local.';
  $('wdsCloudRetry').onclick=wdsReconnectNow;
  window.addEventListener('online',wdsWakeConnection);
  window.addEventListener('focus',wdsWakeConnection);
@@ -7816,6 +7861,80 @@ function wdsBeginSession(){
    }
    wdsSend({type:'ping'});
   },5000);
+ }
+}
+
+// v3.34.4 — TRAINING-ONLY group decisions. Original local issue/HID workflow stays intact.
+// No operational warning channels, credentials, or public alert endpoints are used.
+function wdsSubmitDecision(track,localEvent){
+ const s=wdsSession;
+ if(!s||s.role==='facilitator'||!s.connected||s.snapshot?.status!=='running')return;
+ const last=(track.followups||[]).at(-1);
+ const follow=localEvent.action!=='ISSUE'&&localEvent.action!=='EXPIRE'&&last?.action===localEvent.action?last:null;
+ const polygon=(follow?.updatedPolygon||track.issuedPolygon||[]).slice(0,20)
+  .filter(p=>Number.isFinite(Number(p?.lat))&&Number.isFinite(Number(p?.lon)))
+  .map(p=>({lat:Number(p.lat),lon:Number(p.lon)}));
+ const issue=localEvent.action==='ISSUE';
+ const bulletin=issue?track.hidPreviewText:(follow?.bulletin||
+   (localEvent.action==='EXPIRE'?'SIMULATION ONLY — Scheduled warning expiration.':''));
+ const d=track.hidData||{};
+ const hex=[...crypto.getRandomValues(new Uint8Array(16))].map(x=>x.toString(16).padStart(2,'0')).join('');
+ const event={id:hex,action:localEvent.action,warningId:String(track.id||'').slice(0,32),
+  hazard:track.hazardType==='TO.W'?'TOR':'SVR',
+  detail:String(localEvent.detail||'').slice(0,350),polygon,
+  bulletin:String(bulletin||'').slice(0,5500),
+  counties:(track.issuedCoverage?.counties||[]).slice(0,25).map(c=>String(c.n||c.id||'').slice(0,60)),
+  hazards:{wind:String(d.hidWind||d.wind||'').slice(0,25),
+   hail:String(d.hidHail||d.hail||'').slice(0,25),
+   category:String(d.category||'').slice(0,50)}};
+ s.pending.set(event.id,event);
+ if(!wdsSend({type:'activity_submit',event}))wdsSetStatus('Training decision recorded locally but not yet received by coordinator.');
+}
+function wdsDrawLivePolygon(event){
+ const svg=$('wdsLivePolygon');if(!svg)return;svg.replaceChildren();
+ const points=event?.polygon||[];
+ if(points.length<3){svg.textContent='No issued polygon attached to this action.';return;}
+ const lon=points.map(p=>Number(p.lon)),lat=points.map(p=>Number(p.lat));
+ if([...lon,...lat].some(n=>!Number.isFinite(n)))return;
+ const minX=Math.min(...lon),maxX=Math.max(...lon),minY=Math.min(...lat),maxY=Math.max(...lat);
+ const dx=Math.max(.1,maxX-minX),dy=Math.max(.1,maxY-minY);
+ const scale=Math.min(440/dx,175/dy);
+ const coords=points.map((p)=>{
+  const x=250+(Number(p.lon)-(minX+maxX)/2)*scale;
+  const y=120-(Number(p.lat)-(minY+maxY)/2)*scale;
+  return x.toFixed(1)+','+y.toFixed(1);
+ }).join(' ');
+ const element=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+ element.setAttribute('points',coords);element.setAttribute('fill',event.hazard==='TOR'?'#c4404b44':'#f0d34444');
+ element.setAttribute('stroke',event.hazard==='TOR'?'#ff6971':'#f8da62');
+ element.setAttribute('stroke-width','2.5');svg.append(element);
+}
+function wdsRenderActivity(){
+ const s=wdsSession;if(!s||s.role!=='facilitator')return;
+ const entries=s.activity||[],area=$('wdsLiveEvents');if(!area)return;
+ $('wdsLiveTotals').textContent=entries.length+' recorded decision(s) · '+
+  [...new Set(entries.map(e=>e.group))].length+' group(s) with actions · Last 200 events retained by this prototype';
+ area.replaceChildren();
+ if(!entries.length){area.textContent='No group warning actions received yet. Once a group issues a simulated warning, it will appear here.';}
+ for(const e of [...entries].reverse()){
+  const b=document.createElement('button');b.type='button';
+  b.setAttribute('aria-current',String(wdsLiveSelectedId===e.id));
+  const h=document.createElement('strong'),small=document.createElement('small');
+  h.textContent=e.group.replace('group','Group ')+' · '+e.hazard+' '+e.action;
+  small.textContent=e.warningId+' · '+new Date(e.atMs).toISOString().slice(11,16)+' UTC · '+String(e.detail||'').slice(0,105);
+  b.append(h,small);b.onclick=()=>{wdsLiveSelectedId=e.id;wdsRenderActivity();};area.append(b);
+ }
+ const chosen=entries.find(e=>e.id===wdsLiveSelectedId)||entries.at(-1);
+ if(chosen){
+  wdsLiveSelectedId=chosen.id;
+  $('wdsLiveSummary').textContent=chosen.group.replace('group','Group ')+' · '+chosen.hazard+' '+chosen.action+' · '+
+   chosen.warningId+' · '+new Date(chosen.atMs).toISOString().slice(11,16)+' UTC\n'+
+   (chosen.counties?.length?'Counties: '+chosen.counties.join(', ')+'\n':'')+String(chosen.detail||'');
+  $('wdsLiveBulletin').textContent=chosen.bulletin||'No bulletin text attached to this action.';
+  wdsDrawLivePolygon(chosen);
+ }else{
+  $('wdsLiveSummary').textContent='Select a group decision to inspect its polygon and simulated warning text.';
+  $('wdsLiveBulletin').textContent='';$('wdsLivePolygon').replaceChildren();
  }
 }
 
