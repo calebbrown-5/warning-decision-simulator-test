@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'"><title>WDS · Standalone Saved Results Review</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#081724;color:#e9f2fb;font:14px system-ui,-apple-system,Segoe UI,sans-serif}header{padding:20px 26px;background:#102b41;border-bottom:1px solid #45647c}h1{margin:0 0 6px;font-size:24px}h2{margin:5px 0 15px;font-size:18px}h3{margin:12px 0 7px;font-size:15px}.muted{color:#adc4d7;line-height:1.5}.warning{border-left:3px solid #d8b441;padding:8px 13px;background:#212b38}.shell{max-width:1540px;margin:auto;padding:20px}.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:20px}button,.choose{border:1px solid #6c94b3;background:#1c5477;color:#fff;padding:10px 14px;border-radius:7px;cursor:pointer;font:inherit}button:hover,.choose:hover{background:#2b688d}button[aria-current=true]{border-color:#ffdc63;background:#314765}.choose input{display:none}.layout{display:grid;grid-template-columns:290px 250px minmax(300px,1fr);gap:15px;align-items:start}.panel{background:#10283a;border:1px solid #36546d;border-radius:9px;padding:15px;min-height:100px}.list{display:grid;gap:7px}.list button{text-align:left;width:100%;white-space:normal;line-height:1.35}.line{border-top:1px solid #36546d;margin:15px 0}.meta{white-space:pre-wrap;line-height:1.55}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:9px}.metric{padding:9px;background:#1a3549;border-radius:7px}.metric strong{display:block;margin-bottom:6px}img{width:100%;height:auto;display:block;border:1px solid #415c72;border-radius:7px}.notice{padding:11px;background:#182d3d;border-radius:7px;color:#c9d8e8}pre{overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px;padding:13px;background:#061522;border:1px solid #294b65;border-radius:8px;font:12px/1.5 ui-monospace,monospace}.placeholder{border:1px dashed #65829a;padding:20px;min-height:170px;display:grid;place-items:center;text-align:center;color:#a7bdd0}.small{font-size:12px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #345670;vertical-align:top}th{color:#c1d9eb;background:#193449}@media(max-width:1020px){.layout{grid-template-columns:1fr 1fr}.main{grid-column:1/-1}}@media(max-width:630px){.layout{display:block}.panel{margin-bottom:12px}}
+</style></head><body>
+<header><h1>Warning Decision Simulator · Saved Results</h1><div class="muted">v3.34.5.3 · Standalone, read-only after-action review · No radar case required</div></header>
+<main class="shell"><p class="warning"><b>SIMULATION ONLY — NOT AN OFFICIAL NWS WARNING.</b> This page reads files in your browser, without uploading them or connecting to any service. Use approved storage and handling for exercise records.</p>
+<div class="bar"><label class="choose">Import group JSON files <input id="files" type="file" accept=".json,application/json" multiple></label><button type="button" id="clear">Clear review</button><span id="status" class="muted" role="status">Select one or more saved group files.</span></div>
+<section class="panel" id="comparisonPanel" hidden><h2>Cross-group verification comparison</h2><div id="comparison"></div></section>
+<div class="layout"><section class="panel"><h2>Groups</h2><div id="groups" class="list"></div><p class="muted small">Select a group, then a historical warning decision. Import results for multiple groups to compare their verification side by side.</p></section>
+<section class="panel"><h2>Decision timeline</h2><div id="events" class="list"></div></section>
+<section class="panel main"><h2 id="heading">Select an imported group</h2><div class="meta" id="detail">Completed exercises can be reviewed without reconnecting to Cloudflare or loading the historical radar case.</div>
+<h3>Reflectivity and basemap at decision time</h3><div id="imageArea" class="placeholder">Select a warning decision to view its recorded image.</div><div id="radarTimes" class="muted small"></div>
+<h3>Training warning text</h3><pre id="bulletin">Select a decision.</pre>
+<div class="line"></div><h2>Saved verification</h2><div id="verificationInfo" class="muted"></div><div id="metrics" class="metrics"></div><h3>Per-warning verification</h3><div id="warningScores" class="list"></div><details><summary>Qualifying and excluded storm reports</summary><div id="reports" class="list"></div></details>
+</section></div></main>
+<script>
+'use strict';
+const $=s=>document.getElementById(s),MAX=48*1024*1024,IMG_MAX=2100000;
+const records=[],fmtPct=n=>Number.isFinite(n)?(n*100).toFixed(1)+'%':'—',fmtLead=n=>Number.isFinite(n)?n.toFixed(1)+' min':'—';
+let active=null,activeEvent=null;
+function safeText(parent,tag,value,className){const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;parent.append(node);return node;}
+function valid(raw){
+ if(!raw||raw.format!=='warning-simulator-local-exercise-v1'||!Array.isArray(raw.tracks)||!Array.isArray(raw.events)||raw.tracks.length>200||raw.events.length>4000)throw Error('Not a supported group JSON');
+ if(!raw.scenario||typeof raw.scenario.radar!=='string'||!Number.isFinite(raw.scenario.exerciseStartMs)||!Number.isFinite(raw.clock?.ms))throw Error('Missing scenario/clock metadata');
+ if(raw.recording?.initials&&(!Array.isArray(raw.recording.initials)||raw.recording.initials.length>8||raw.recording.initials.some(s=>!/^[A-Z]{1,5}$/.test(s))))throw Error('Invalid initials');
+ if(raw.reviewMedia){if(raw.reviewMedia.schema!=='wds-radar-snapshots-v1'||!Array.isArray(raw.reviewMedia.frames)||raw.reviewMedia.frames.length>150)throw Error('Invalid review images');
+  for(const f of raw.reviewMedia.frames)if(!Number.isInteger(f.eventIndex)||f.eventIndex<0||f.eventIndex>=raw.events.length||!['ready','unavailable'].includes(f.status)||
+   (f.status==='ready'&&(!/^data:image\/webp;base64,[A-Za-z0-9+/=]+$/.test(f.dataUrl||'')||f.dataUrl.length>IMG_MAX||Date.parse(f.scanUtc)>f.atMs)))throw Error('Invalid radar image');}
+ return true;
+}
+function recordName(r){const initials=(r.raw.recording?.initials||[]).join(', ')||'No initials';return `${(r.raw.recording?.group||'standalone').replace('group','Group ')} · ${initials}`;}
+function eventSnapshot(raw,i){
+ const event=raw.events[i],track=raw.tracks.find(t=>t.id===event.trackId);if(!track)return {event,track:null,bulletin:'Warning record missing'};
+ let bulletin=track.issueSnapshot?.bulletin||track.hidPreviewText||'No saved bulletin';let followIndex=0;
+ for(let j=0;j<=i;j++){const e=raw.events[j];if(e.trackId!==track.id)continue;
+  if(e.action==='ISSUE')bulletin=track.issueSnapshot?.bulletin||track.hidPreviewText||bulletin;
+  else if(['CONTINUE','CANCEL','EXP'].includes(e.action)){const f=track.followups?.[followIndex++];if(f)bulletin=f.bulletin||bulletin;}
+ }
+ if(event.action==='EXPIRE')bulletin='No new bulletin at scheduled expiration.';
+ return {event,track,bulletin};
+}
+function renderComparison(){const panel=$('comparisonPanel'),area=$('comparison');area.replaceChildren();panel.hidden=records.length<2;if(records.length<2)return;
+ const table=document.createElement('table');const thead=document.createElement('thead'),tr=document.createElement('tr');for(const name of ['Group · forecasters','POD','FAR','CSI','Lead','Reports'])safeText(tr,'th',name);thead.append(tr);table.append(thead);const tbody=document.createElement('tbody');
+ for(const rec of records){const row=document.createElement('tr');const data=rec.raw.reviewVerification?.result?.raw;for(const v of [recordName(rec),fmtPct(data?.pod),fmtPct(data?.far),fmtPct(data?.csi),fmtLead(data?.averageLeadMinutes),data?String(data.warnedReports)+'/'+String(data.reports):'Unavailable'])safeText(row,'td',v);tbody.append(row);}table.append(tbody);area.append(table);}
+function renderGroups(){const area=$('groups');area.replaceChildren();renderComparison();for(const r of records){const b=safeText(area,'button',recordName(r)+' · '+r.raw.events.length+' actions');b.type='button';b.setAttribute('aria-current',String(active===r));b.onclick=()=>selectGroup(r);}}
+function showMetric(parent,title,m){if(!m)return;const c=safeText(parent,'div','','metric');safeText(c,'strong',title);safeText(c,'div','POD '+fmtPct(m.pod)+' · FAR '+fmtPct(m.far)+' · CSI '+fmtPct(m.csi));safeText(c,'div','Lead '+fmtLead(m.averageLeadMinutes)+' · '+m.warnedReports+'/'+m.reports+' reports','small muted');}
+function renderVerification(raw){
+ $('metrics').replaceChildren();$('warningScores').replaceChildren();$('reports').replaceChildren();
+ const v=raw.reviewVerification;
+ if(v?.status!=='ready'||!v.result){$('verificationInfo').textContent='Verification unavailable in this recording. '+(v?.reason||'Legacy JSON files do not contain saved verification; they remain reviewable.');return;}
+ const r=v.result;
+ $('verificationInfo').textContent='COW-inspired training approximation, not official verification. Start '+new Date(r.startMs).toISOString()+' · evaluated through '+new Date(r.endMs).toISOString()+' · '+r.reportCounts.archived+' historical reports. Pending warnings are not counted as false alarms.';
+ for(const [label,score] of [['Overall · unadjusted',r.raw],['Overall · training adjusted',r.adjusted],['SVR · unadjusted',r.byHazard?.svr?.raw],['SVR · adjusted',r.byHazard?.svr?.adjusted],['TOR · unadjusted',r.byHazard?.tor?.raw],['TOR · adjusted',r.byHazard?.tor?.adjusted]])showMetric($('metrics'),label,score);
+ for(const w of r.warnings||[])safeText($('warningScores'),'div',`${w.type==='TO.W'?'TOR':'SVR'} ${w.id} · ${w.completed?'completed':'pending'} · matched reports ${(w.matches||[]).length} · first report lead ${fmtLead(w.firstLeadMinutes)}`,'notice');
+ for(const p of (r.reports||[]).slice(0,300))safeText($('reports'),'div',`${p.eventUtc||''} · ${p.type||''} · ${p.label||''} · ${p.inWindow?(p.matches?.length?'matched '+p.matches.join(', '):'not matched'):(p.reason||'outside window')}`,'notice');
+}
+function selectGroup(r){active=r;activeEvent=null;renderGroups();$('heading').textContent=recordName(r)+' · '+r.raw.scenario.radar+' · saved results';
+ $('detail').textContent=`Prepared case: ${r.raw.caseRef?.preparedScenarioId||'unknown'} · Original exercise start ${new Date(r.raw.scenario.exerciseStartMs).toISOString()} · ${r.raw.events.length} actions`;
+ renderVerification(r.raw);$('events').replaceChildren();r.raw.events.forEach((e,i)=>{const b=safeText($('events'),'button',new Date(e.atMs).toISOString().slice(11,19)+'Z · '+e.action+' · '+(e.hazardType==='TO.W'?'TOR':'SVR')+' '+e.trackId);b.type='button';b.onclick=()=>selectEvent(i);});
+ $('imageArea').replaceChildren();$('imageArea').className='placeholder';$('imageArea').textContent='Select an event to display the saved radar image.';$('radarTimes').textContent='';$('bulletin').textContent='Select a decision.';
+ if(r.raw.events.length)selectEvent(0);
+}
+function selectEvent(i){if(!active)return;activeEvent=i;const {event,track,bulletin}=eventSnapshot(active.raw,i);$('detail').textContent=`${recordName(active)} · ${(track?.hazardType||event.hazardType)==='TO.W'?'TOR':'SVR'} ${event.trackId} · ${event.action}\nDecision: ${new Date(event.atMs).toISOString()}\n${event.detail||'Training decision'}`;
+ $('bulletin').textContent=bulletin;const area=$('imageArea');area.replaceChildren();const f=active.raw.reviewMedia?.frames?.find(x=>x.eventIndex===i);
+ if(f?.status==='ready'){area.className='';const img=document.createElement('img');img.alt='Saved historical DBZH radar, basemap, and warning polygon (training only)';img.src=f.dataUrl;area.append(img);$('radarTimes').textContent='Warning '+f.decisionUtc+' · latest completed reflectivity '+f.scanUtc+' · '+Number(f.tiltDeg).toFixed(2)+'°';}
+ else{area.className='placeholder';area.textContent=f?.reason||'No radar screenshot for this decision (older file or non-issuance event).';$('radarTimes').textContent='';}
+ [...$('events').children].forEach((node,j)=>node.setAttribute('aria-current',String(j===i)));
+}
+$('files').addEventListener('change',async ev=>{
+ const files=[...ev.target.files];ev.target.value='';const notes=[];
+ for(const f of files){try{if(f.size>MAX)throw Error('File exceeds 48 MB');const raw=JSON.parse(await f.text());valid(raw);
+  const id=(raw.recording?.roomId||f.name)+'|'+(raw.recording?.group||f.name);const i=records.findIndex(x=>x.id===id);const r={id,raw,name:f.name};if(i>=0)records[i]=r;else records.push(r);notes.push('Accepted '+f.name);
+ }catch(e){notes.push('Rejected '+f.name+': '+e.message);}}
+ $('status').textContent=notes.join(' · ').slice(0,1200);renderGroups();if(records.length)selectGroup(records.at(-1));
+});
+$('clear').onclick=()=>{records.length=0;active=null;activeEvent=null;renderGroups();$('events').replaceChildren();$('metrics').replaceChildren();$('warningScores').replaceChildren();$('reports').replaceChildren();$('imageArea').replaceChildren();$('imageArea').textContent='Select a group';$('detail').textContent='';$('bulletin').textContent='';$('heading').textContent='Select an imported group';$('status').textContent='Review cleared (files were never uploaded).';};
+</script></body></html>
