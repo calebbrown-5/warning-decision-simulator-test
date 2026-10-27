@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://wds-training-coordinator.calebbrown225.workers.dev wss://wds-training-coordinator.calebbrown225.workers.dev; img-src 'self' data: blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Warning Decision Simulator · v3.34.3 COORDINATED TRAINING PREVIEW</title>
+<title>Warning Decision Simulator · v3.34.5.1 COORDINATED TRAINING PREVIEW</title>
 <style>
 :root{color-scheme:dark;--bg:#0b111c;--panel:#111b29;--border:#28364a;--fg:#eaf2fc;--dim:#9eb0c5;--accent:#65acec;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -608,7 +608,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 #wdsAarCollected{display:grid;gap:7px;margin-top:8px}
 #wdsAarCollected button{padding:8px;text-align:left;border-radius:5px;background:#214360;color:#f0faff;border:1px solid #698eb3;cursor:pointer}
 </style></head>
-<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
+<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.1 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
 <section id="wdsCloudPanel" hidden aria-label="Cloudflare coordinated training session">
  <div class="wds-cloud-section">
   <div class="wds-cloud-title">COORDINATED TRAINING · <span id="wdsCloudRole">—</span></div>
@@ -4291,6 +4291,27 @@ function schedulePaint(){if(frame!==null)cancelAnimationFrame(frame);frame=reque
 // ResizeObserver below repaints when pane bounds change even if the window size does not.
 function fitPanes(){/* Responsive dimensions are managed by CSS Grid. */}
 
+// A coordinated header and join dialog can alter pane sizes during initial
+// rendering. Check sizes after layout has settled and repaint if they changed.
+// No network activity and no radar-data reload are involved.
+let wdsLastLayoutSignature='',wdsLayoutRepairPending=false;
+function wdsRepairInitialRadarLayout(){
+ if(wdsLayoutRepairPending)return;
+ wdsLayoutRepairPending=true;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  wdsLayoutRepairPending=false;
+  if(!initialized)return;
+  const shown=visiblePanes();
+  const dims=shown.map(p=>[p.map.clientWidth,p.map.clientHeight]);
+  if(!shown.length||dims.some(([w,h])=>w<80||h<80))return;
+  const signature=dims.map(([w,h])=>w+'x'+h).join('|');
+  if(signature!==wdsLastLayoutSignature){
+   wdsLastLayoutSignature=signature;
+   refreshView();requestTrackPaint();
+  }
+ }));
+}
+
 function changeZoom(delta){zoom=Math.max(5,Math.min(12,zoom+delta));refreshView();requestTrackPaint();}
 // All panels use the exact same geographic coordinate, not the same screen pixel.
 // The crosshair is an independent overlay; pointer movement never recomputes a radar raster.
@@ -7601,7 +7622,7 @@ window.addEventListener('keydown',e=>{if($('facilitatorDialog').open)return;
 if(e.key==='Escape'&&trackDraft){e.preventDefault();cancelDraft();return;}if(e.key==='Escape'&&cursorPinned){e.preventDefault();unpinCursor();return;}const m=PRODUCT_SHORTCUTS[e.key?.toLowerCase()];if(m&&!e.repeat){e.preventDefault();if(setMoment(activePane(),m))$('shortcutStatus').textContent=`Pane ${activeId}: ${PRODUCT_NAMES[m]}`;activePane().canvas.focus({preventScroll:true});return;}
 if(a?.tagName==='SELECT')return;if(e.key==='['||e.key===']'){e.preventDefault();pauseAutoFollowRadar();setLowPass(lowPassIx+(e.key===']'?1:-1));return;}if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')volumeStep(-1);if(e.key==='ArrowRight')volumeStep(1);if(e.key==='ArrowUp')tiltStep(1);if(e.key==='ArrowDown')tiltStep(-1);}},true);
 window.addEventListener('resize',()=>{fitPanes();if(initialized){refreshView();requestTrackPaint();}});
- const resizeObserver=new ResizeObserver(()=>{if(initialized){refreshView();requestTrackPaint();}});for(const p of panes)resizeObserver.observe(p.map);}
+ const resizeObserver=new ResizeObserver(()=>{if(initialized){refreshView();requestTrackPaint();wdsRepairInitialRadarLayout();}});for(const p of panes)resizeObserver.observe(p.map);}
 async function init(){try{loadStoredPalettes();createPanes();attachControls();refreshHazardConsole();
 if(window.__embeddedManifest)manifest=window.__embeddedManifest;else{const response=await fetch(new URL('manifest.json',DATA_ROOT));if(!response.ok)throw Error('Manifest HTTP '+response.status);manifest=await response.json();}
 if(!manifest.volumes?.length)throw Error('No Level II data available');
@@ -7616,7 +7637,7 @@ if(ACTIVE_SCENARIO_ID){
  $('facilitatorVelocityCoverage').textContent=nVel?`Base velocity: ${nVel}/${manifest.volumes.length} volumes · SRV uses the same velocity moment.`:'VELOCITY MISSING: no usable velocity gates in the prepared manifest. Re-prepare after patching and report the result.';
 }$('volume').replaceChildren();for(let i=0;i<manifest.volumes.length;i++){const v=manifest.volumes[i],o=document.createElement('option');o.value=String(i);o.textContent=v.volume_start_utc.slice(11,19)+'–'+v.volume_end_utc.slice(11,19)+'Z';$('volume').add(o);}
 $('timeline').max='0';$('beginTime').textContent='First available scan';$('endTime').textContent='Future scans locked';initExerciseClock();
-sharedAngle=nearestCommonTilt(.5);refreshRadarAvailability();for(const p of panes)targetSweep(p,sharedAngle);initialized=true;setLayout(1);setVolume(0);loadStaticBasemap();await loadScenarioLsrs();refreshTrackControls();requestTrackPaint();$('status').textContent='Training mode ready · future radar cuts locked.';if(wdsSession?.snapshot)wdsClockFrame(true);
+sharedAngle=nearestCommonTilt(.5);refreshRadarAvailability();for(const p of panes)targetSweep(p,sharedAngle);initialized=true;setLayout(1);setVolume(0);loadStaticBasemap();await loadScenarioLsrs();refreshTrackControls();requestTrackPaint();$('status').textContent='Training mode ready · future radar cuts locked.';wdsRepairInitialRadarLayout();if(wdsSession?.snapshot)wdsClockFrame(true);
 }catch(err){console.error(err);$('status').textContent='Initialization failed: '+err.message;}}
 /* WDS v3.34.3+: browser coordinator bridge. Training-only. No operational routes.
    Role tokens are held in memory only and removed from the address bar promptly. */
@@ -7633,13 +7654,38 @@ function wdsMayIssueTraining(){
  const hid=$('hidStatus');if(hid&&$('hidDialog').open)hid.textContent=why;
  return false;
 }
+// Tab-only recovery for a coordinated invitation. The credential must never be
+// placed in a URL after initial navigation, local exercise JSON, or localStorage.
+// history.state holds a non-secret marker; sessionStorage holds the bearer
+// credential only in this browser tab, and only for the matching scenario URL.
+const WDS_TAB_INVITE_KEY='wds-coordinator-tab-invite-v33451';
 function wdsParseInvitation(){
  const raw=location.hash.slice(1);
- if(!raw.includes('wds-room='))return null;
- // Remove the bearer credential from browser navigation before opening sockets.
- history.replaceState(null,'',location.pathname+location.search);
- const p=new URLSearchParams(raw);
- const room=p.get('wds-room'),role=p.get('wds-role'),token=p.get('wds-token');
+ let room=null,role=null,token=null;
+ const path=location.pathname+location.search;
+ if(raw.includes('wds-room=')){
+  const p=new URLSearchParams(raw);
+  room=p.get('wds-room');role=p.get('wds-role');token=p.get('wds-token');
+  // Validate before preserving anything, and strip the credential from the URL.
+  const valid=/^[a-f0-9]{32}$/.test(room||'')&&
+   /^(facilitator|group[A-D])$/.test(role||'')&&/^[a-f0-9]{64}$/.test(token||'');
+  if(!valid){history.replaceState(null,'',path);return {error:'Invalid coordinated-exercise invitation.'};}
+  let marker=null;
+  try{
+   sessionStorage.setItem(WDS_TAB_INVITE_KEY,JSON.stringify({room,role,token,path,savedAt:Date.now()}));
+   marker={wdsCoordinatedTab:true};
+  }catch(err){console.warn('Tab-only session persistence unavailable; retain the private invitation for reload.',err);}
+  history.replaceState(marker,'',path);
+ }else if(history.state?.wdsCoordinatedTab===true){
+  try{
+   const saved=JSON.parse(sessionStorage.getItem(WDS_TAB_INVITE_KEY)||'null');
+   if(saved?.path===path&&Number.isFinite(saved.savedAt)&&
+      Date.now()-saved.savedAt>=0&&Date.now()-saved.savedAt<24*60*60*1000){
+    room=saved.room;role=saved.role;token=saved.token;
+   }
+  }catch(err){console.warn('Unable to restore the coordinated tab invitation.',err);}
+  if(!room||!role||!token)return {error:'Coordinated tab session could not be restored. Reopen the original private invitation.'};
+ }else return null;
  if(!/^[a-f0-9]{32}$/.test(room||'')||
     !/^(facilitator|group[A-D])$/.test(role||'')||
     !/^[a-f0-9]{64}$/.test(token||''))return {error:'Invalid coordinated-exercise invitation.'};
@@ -7790,7 +7836,7 @@ function wdsOpenSocket(){
   }
   if(['welcome','state','pong'].includes(msg.type)&&s.connected){
    s.lastPong=Date.now();s.groups=msg.groups||s.groups;
-   wdsSyncClock(msg.snapshot);wdsRender();
+   wdsSyncClock(msg.snapshot);wdsRender();if(msg.type==='welcome')wdsRepairInitialRadarLayout();
   }
  };
  ws.onerror=()=>{
@@ -7964,7 +8010,7 @@ async function wdsConfigureGroupJoin(continueCallback){
    if(!wdsFolderReady&&!wdsManualSave)throw Error('Configure a results folder before joining.');
    $('wdsInitialsDisplay').textContent=wdsParticipantInitials.join(', ');
    $('wdsSaveStatus').textContent=wdsFolderReady?'Ready to save to '+wdsFolderHandle.name+'.':'Manual Downloads backup required at finish.';
-   dialog.close();wdsLocalStarted=true;continueCallback();
+   dialog.close();wdsLocalStarted=true;continueCallback();wdsRepairInitialRadarLayout();
    wdsStartLocalRecovery();
   }catch(e){$('wdsJoinStatus').textContent=e.message;}
  };
