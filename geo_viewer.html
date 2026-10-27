@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://wds-training-coordinator.calebbrown225.workers.dev wss://wds-training-coordinator.calebbrown225.workers.dev; img-src 'self' data: blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Warning Decision Simulator · v3.34.5.1 COORDINATED TRAINING PREVIEW</title>
+<title>Warning Decision Simulator · v3.34.5.2 COORDINATED TRAINING PREVIEW</title>
 <style>
 :root{color-scheme:dark;--bg:#0b111c;--panel:#111b29;--border:#28364a;--fg:#eaf2fc;--dim:#9eb0c5;--accent:#65acec;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -607,8 +607,16 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 #wdsSaveStatus{max-width:360px}
 #wdsAarCollected{display:grid;gap:7px;margin-top:8px}
 #wdsAarCollected button{padding:8px;text-align:left;border-radius:5px;background:#214360;color:#f0faff;border:1px solid #698eb3;cursor:pointer}
+.wds-review-layout{display:grid;grid-template-columns:minmax(195px,32%) minmax(0,1fr);gap:12px}
+.wds-review-event-list{display:flex;flex-direction:column;gap:7px;max-height:550px;overflow:auto}
+.wds-review-event-list button{padding:9px;border:1px solid #446c86;border-radius:6px;text-align:left;background:#16344a;color:#eaf7ff;cursor:pointer}
+.wds-review-event-list button[aria-current=true]{border-color:#8ee9ff;background:#235672}
+.wds-review-detail{display:grid;gap:9px;align-content:start;min-width:0}
+.wds-review-detail pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:400px;overflow:auto;border:1px solid #3a647e;background:#071626;border-radius:6px;padding:12px;font-size:12px}
+.wds-review-outline{width:100%;height:auto;max-height:240px;border:1px solid #355d79;background:#071b2c;border-radius:6px}
+@media(max-width:800px){.wds-review-layout{grid-template-columns:1fr}.wds-review-event-list{max-height:190px}}
 </style></head>
-<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.1 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
+<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.2 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
 <section id="wdsCloudPanel" hidden aria-label="Cloudflare coordinated training session">
  <div class="wds-cloud-section">
   <div class="wds-cloud-title">COORDINATED TRAINING · <span id="wdsCloudRole">—</span></div>
@@ -839,13 +847,30 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
     <section class="facilitator-panel"><h3>TRAINEE DECISIONS</h3><div class="facilitator-statrow"><div class="facilitator-stat"><b id="facilitatorActiveCount">0</b><span>Active</span></div><div class="facilitator-stat"><b id="facilitatorEndedCount">0</b><span>Ended</span></div><div class="facilitator-stat"><b id="facilitatorDecisionCount">0</b><span>Actions</span></div></div>
       <div id="facilitatorInventory" class="facilitator-muted" style="margin-top:10px">No warnings issued.</div>
     </section>
-    <section class="facilitator-panel"><h3>SESSION OPERATIONS</h3><div class="facilitator-muted">Export or restore local training decisions. Loading a session pauses the exercise.</div>
-      <div class="facilitator-actions"><button type="button" id="facilitatorExport">Export JSON</button><button type="button" id="facilitatorImport">Load JSON</button><button type="button" id="facilitatorReset">Reset Exercise</button></div>
+    <section class="facilitator-panel"><h3>SESSION OPERATIONS</h3><div class="facilitator-muted">Import group JSONs for read-only review. Group imports never replace the active exercise clock or local warnings.</div>
+      <div class="facilitator-actions"><button type="button" id="facilitatorExport">Export JSON</button><button type="button" id="facilitatorImport">Import group JSONs</button><button type="button" id="facilitatorReset">Reset Exercise</button></div>
       <div class="facilitator-status" id="facilitatorFileStatus" role="status">No saved session loaded.</div><div id="wdsAarCollected" aria-label="Locally imported forecaster group files"></div>
     </section>
   </div>
   <div class="facilitator-right">
-    <div class="lsr-tabs"><button type="button" id="facilitatorLibraryTab" aria-selected="false">Saved scenarios</button><button id="facilitatorDecisionsTab" aria-selected="true" type="button">Decision review</button><button id="facilitatorReportsTab" aria-selected="false" type="button">Storm reports / selection map</button><button type="button" id="facilitatorVerificationTab" aria-selected="false">Verification</button><button type="button" id="facilitatorAarTab" aria-selected="false">After-action replay</button></div>
+    <div class="lsr-tabs"><button type="button" id="facilitatorLibraryTab" aria-selected="false">Saved scenarios</button><button id="facilitatorDecisionsTab" aria-selected="true" type="button">Decision review</button><button id="facilitatorReportsTab" aria-selected="false" type="button">Storm reports / selection map</button><button type="button" id="facilitatorVerificationTab" aria-selected="false">Verification</button><button type="button" id="facilitatorAarTab" aria-selected="false">After-action replay</button><button id="facilitatorGroupsTab" aria-selected="false" type="button">Group JSON review</button></div>
+    <section id="facilitatorGroupsView" class="hidden" aria-label="Imported group exercise decisions: read-only review">
+      <div class="facilitator-panel">
+       <h3>LOCAL GROUP EXERCISE REVIEW · READ ONLY</h3>
+       <p class="facilitator-muted">Import completed Group A–D JSON files. The prepared radar case must match; the exact exercise start clock may differ. Files stay in this browser and will not replace your current scenario or change the shared clock.</p>
+       <div class="facilitator-actions"><button id="wdsGroupImportButton" type="button">Import group JSON files</button></div>
+       <p class="facilitator-status" id="wdsGroupReviewStatus">No group files selected.</p>
+       <div id="wdsGroupReviewHeading" class="facilitator-muted">Choose a saved group file to examine warning decisions.</div>
+       <div class="wds-review-layout">
+        <div id="wdsGroupReviewEvents" class="wds-review-event-list" aria-label="Imported warning decisions"></div>
+        <div class="wds-review-detail">
+         <div id="wdsGroupDecisionSummary" class="facilitator-status">No imported decision selected.</div>
+         <svg id="wdsGroupPolygon" class="wds-review-outline" viewBox="0 0 400 180" role="img" aria-label="Read-only warning footprint overview"></svg>
+         <pre id="wdsGroupBulletin" aria-label="Saved training warning bulletin"></pre>
+        </div>
+       </div>
+      </div>
+    </section>
     <section id="facilitatorLibraryView" class="hidden" aria-label="Instructor saved scenario library">
       <p class="library-info">Prepared cases can be reopened without entering radar sites or UTC times. Report selections are saved with each prepared case; raw downloads can resume preparation. All dates and source radar IDs in this view are trainer-only.</p>
       <div class="library-toolbar"><input id="librarySearch" type="search" placeholder="Search names, radars, WFOs, dates…" aria-label="Search saved scenarios"><button id="libraryRefresh" type="button">Refresh library</button></div>
@@ -1893,7 +1918,7 @@ function sessionFingerprint(){
 }
 function sessionExportObject(){
  reconcileExerciseExpirations();
- return {format:SESSION_FORMAT,appVersion:'3.34.5',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
+ return {format:SESSION_FORMAT,appVersion:'3.34.5.2',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
   clock:{ms:exerciseClockMs,zone:exerciseClockZone,rate:Number($('exerciseRate').value)},
   tracks:stormTracks.map(t=>JSON.parse(JSON.stringify(t,(k,v)=>['hidHold','preview','history','eventHistory'].includes(k)?undefined:v))),
   selectedTrackId,trackCounter,events:exerciseEvents.map(e=>({...e})),
@@ -1924,7 +1949,7 @@ function rejectDangerousSessionData(value,depth=0){
  }else if(typeof value==='string'&&value.length>250000)throw Error('Session contains an oversized text field.');
 }
 function validSessionPolygon(poly){return Array.isArray(poly)&&poly.length>=3&&poly.length<=10&&poly.every(v=>v&&Number.isFinite(v.lat)&&Number.isFinite(v.lon)&&Math.abs(v.lat)<=90&&Math.abs(v.lon)<=180);}
-function validateExerciseSession(raw){
+function validateExerciseSession(raw,{groupReview=false}={}){
  if(!raw||raw.format!==SESSION_FORMAT)throw Error('Not a supported simulator session JSON file.');
  rejectDangerousSessionData(raw);
  if(raw.recording!==undefined){
@@ -1933,9 +1958,20 @@ function validateExerciseSession(raw){
    !Array.isArray(r.initials)||r.initials.length>8||r.initials.some(x=>typeof x!=='string'||!/^[A-Z]{1,5}$/.test(x))||
    (r.roomId!==null&&r.roomId!==undefined&&!/^[a-f0-9]{32}$/.test(r.roomId)))throw Error('Invalid group recording metadata.');
  }
- if(JSON.stringify(raw.scenario)!==JSON.stringify(sessionFingerprint()))throw Error('The saved session belongs to a different radar case or scenario manifest. Load its matching case first.');
+ const current=sessionFingerprint(),saved=raw.scenario;
+ if(!saved||typeof saved!=='object'||
+  ['radar','volumeCount','first','last'].some(k=>saved[k]!==current[k])||
+  !Number.isFinite(saved.exerciseStartMs))
+   throw Error('The saved session belongs to a different radar archive or scenario manifest. Load its matching case first.');
+ if(!groupReview&&saved.exerciseStartMs!==current.exerciseStartMs)
+   throw Error('A full session restore requires its exact exercise start time. Import group JSONs for read-only review instead.');
  if(raw.caseRef?.preparedScenarioId&&raw.caseRef.preparedScenarioId!==(ACTIVE_SCENARIO_ID||manifest?.scenario_id))throw Error('Prepared scenario ID does not match the selected case.');
- if(!Number.isFinite(raw.clock?.ms)||raw.clock.ms<exerciseStartMs||raw.clock.ms>exerciseEndMs)throw Error('Invalid exercise clock in session.');
+ // The Cloudflare exercise may start at a different completed-cut timestamp than
+ // the standalone viewer. Preserve its original start as historical metadata.
+ const lower=groupReview?saved.exerciseStartMs:exerciseStartMs;
+ if(!Number.isFinite(raw.clock?.ms)||raw.clock.ms<lower||raw.clock.ms>exerciseEndMs||
+   (groupReview&&(lower<Date.parse(current.first)||lower>exerciseEndMs)))
+   throw Error('Invalid exercise clock in session.');
  if(!['eastern','central','mountain','pacific'].includes(raw.clock.zone))throw Error('Invalid exercise time zone.');
  if(!Array.isArray(raw.tracks)||raw.tracks.length>200||!Array.isArray(raw.events)||raw.events.length>4000)throw Error('Session exceeds warning/event count limits.');
  const known=new Set();
@@ -2607,11 +2643,13 @@ function lsrRenderPreview(){
  }
  if(rows.length>80){const note=document.createElement('div');note.textContent=`${rows.length-80} additional scheduled reports not shown in this preview.`;container.append(note);}
 }
-function lsrChooseView(view){lsrView=['reports','decisions','library','verification','aar'].includes(view)?view:'decisions';
+function lsrChooseView(view){lsrView=['reports','decisions','library','verification','aar','groups'].includes(view)?view:'decisions';
  $('facilitatorVerificationView').classList.toggle('hidden',lsrView!=='verification');
  $('facilitatorAarView').classList.toggle('hidden',lsrView!=='aar');
  if(lsrView!=='aar'&&$('facilitatorDialog').classList.contains('aar-widescreen')){$('facilitatorDialog').classList.remove('aar-widescreen');$('aarWideView').setAttribute('aria-pressed','false');$('aarWideView').textContent='⤢ Widen viewer';}
  $('facilitatorAarTab').setAttribute('aria-selected',String(lsrView==='aar'));
+ $('facilitatorGroupsTab').setAttribute('aria-selected',String(lsrView==='groups'));
+ $('facilitatorGroupsView').classList.toggle('hidden',lsrView!=='groups');
  $('facilitatorVerificationTab').setAttribute('aria-selected',String(lsrView==='verification'));
  $('facilitatorReportsView').classList.toggle('hidden',lsrView!=='reports');
  $('facilitatorDecisionsView').classList.toggle('hidden',lsrView!=='decisions');
@@ -2755,6 +2793,7 @@ function attachLsrControls(){
  $('facilitatorReportsTab').onclick=()=>lsrChooseView('reports');
  $('facilitatorVerificationTab').onclick=()=>lsrChooseView('verification');
  $('facilitatorAarTab').onclick=()=>lsrChooseView('aar');
+ $('facilitatorGroupsTab').onclick=()=>lsrChooseView('groups');
  $('verificationOrientation').onchange=()=>{verificationOrientationMinutes=Number($('verificationOrientation').value);renderVerification(true);};
  $('verificationArealRadius').onchange=()=>{verificationArealRadiusKm=Number($('verificationArealRadius').value);renderVerification(true);};
  $('verificationRefresh').onclick=()=>renderVerification(true);
@@ -3854,6 +3893,7 @@ function attachFacilitatorControls(){
  $('facilitatorZone').onchange=()=>{$('exerciseZone').value=$('facilitatorZone').value;$('exerciseZone').onchange();refreshFacilitatorConsole(true);};
  $('facilitatorExport').onclick=()=>{exportExerciseSession();$('facilitatorFileStatus').textContent=$('reviewFileStatus').textContent;refreshFacilitatorConsole(true);};
  $('facilitatorImport').onclick=()=>$('reviewImportFile').click();
+ $('wdsGroupImportButton').onclick=()=>$('reviewImportFile').click();
  $('facilitatorReset').onclick=facilitatorResetExercise;
  attachLsrControls();attachAarControls();
  $('facilitatorViewRadar').onclick=()=>{
@@ -4046,7 +4086,7 @@ function radarDataSummary(data){
 async function selectData(p){const req=++p.request,s=getSweep(p);p.frame.querySelector('.time-label').textContent='Loading…';if(!s){p.selected=null;const msg=caseHasMoment(p.moment)?'Awaiting matching completed cut':'No '+p.moment+' data';p.frame.querySelector('.time-label').textContent=msg;
  if(p.id===activeId){const available=(volume()?.sweeps||[]).filter(sw=>sw.moments[nativeMoment(p.moment)]&&allowedSweep(sw));
  $('status').textContent=msg+` · ${available.length} completed product cuts in volume; selected tilt ${sharedAngle.toFixed(2)}°. Try a later radar update or different tilt.`;}
- return;}try{const data=await loadData(s,nativeMoment(p.moment));if(req!==p.request)return;
+ schedulePaint();return;}try{const data=await loadData(s,nativeMoment(p.moment));if(req!==p.request)return;
  let weatherMask=null,maskNote=(p.moment==='KDP'&&data.meta.source==='derived')?' · derived estimate (not native NEXRAD)': '';
  if(req!==p.request)return;p.selected={s,data,az:azimuthIndex(s),weatherMask,maskNote};p.frame.querySelector('.moment-label').textContent=p.moment==='SRV'?srvDisplayName():PRODUCT_NAMES[p.moment];p.frame.querySelector('.pane-meta').textContent=`${p.angle.toFixed(2)}°`;p.frame.querySelector('.time-label').textContent=s.last_ray_utc.slice(11,19)+'Z'+(p.moment==='SRV'&&!stormMotion?' · base V; no storm motion':'');if(p.id===activeId){updateDetails();$('status').textContent=`Loaded ${p.moment} · ${s.id} · ${s.fixed_elevation_deg.toFixed(2)}° · ${radarDataSummary(data)}${maskNote}`;}if(DUALPOL_PRODUCTS.has(p.moment))$('dualpolMaskStatus').textContent='Native gate flags preserved; no blanket reflectivity filter.'+(maskNote||'');schedulePaint();requestCursorRefresh();}catch(err){if(req!==p.request)return;console.error(err);p.selected=null;p.frame.querySelector('.time-label').textContent='Load failed';$('status').textContent='ERROR: '+err.message;}}
 function updateDetails(){const p=activePane(),s=p.selected?.s,data=p.selected?.data;if(!data){$('details').textContent='Select a valid radar moment.';return;}const m=data.meta;const row=(name,value)=>`<div><span>${name}</span><b>${value}</b></div>`;$('details').innerHTML=row('Pane',p.id)+row('Product',p.moment)+row('Elevation',p.angle.toFixed(2)+'°')+row('Native rays × gates',m.shape.join(' × '))+row('Valid gates',m.finite_gate_count.toLocaleString())+row('Missing',m.missing_gate_count.toLocaleString())+row('Range folded',m.range_folded_gate_count.toLocaleString())+row('Decoded sample',radarDataSummary(data))+(p.moment==='SRV'?row('SRV motion',stormMotion?motionLabel():'No available storm motion; showing base velocity'):'' );}
@@ -4248,7 +4288,8 @@ function drawOverlays(p,W,H){
  if(p.moment==='SRV'&&stormMotion){ctx.font='11px system-ui';const label=motionLabel(),textW=ctx.measureText(label).width+14,bw=Math.min(W-6,textW),bx=Math.max(2,W-bw-3);ctx.fillStyle='rgba(5,13,22,.78)';ctx.fillRect(bx,3,bw,25);ctx.fillStyle='#f1d995';ctx.fillText(label,bx+6,20);}
 }
 function paint(p){
- if(!p.visible||!p.selected)return;
+ if(!p.visible)return;
+ if(!p.selected){p.ctx.clearRect(0,0,p.canvas.width,p.canvas.height);return;}
  // Single-pane mode needs a full-resolution drawing surface. v2.9 capped every
  // pane at 950 pixels wide, which forced the large single pane to be upscaled.
  // Give a single or maximized pane its own pixel budget; keep the established
@@ -7884,7 +7925,7 @@ function wdsBeginSession(){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)wdsWakeConnection();});
  $('wdsLocalSaveBox').hidden=invitation.role==='facilitator';
  $('wdsFinishSave').onclick=wdsFinishAndSave;
- if(invitation.role==='facilitator')s_init();
+ if(invitation.role==='facilitator'){ $('facilitatorImport').disabled=false; $('reviewImport').disabled=false; s_init(); }
  else wdsConfigureGroupJoin(s_init);
  function s_init(){
   wdsRender();wdsOpenSocket();
@@ -7905,7 +7946,7 @@ function wdsBeginSession(){
 const WDS_LOCAL_DB='wds-local-training-v3345';
 let wdsFolderHandle=null,wdsFolderReady=false,wdsManualSave=false;
 let wdsParticipantInitials=[],wdsLocalFinished=false,wdsLocalRecoveryTimer=null;
-let wdsLocalStarted=false,wdsLocalReviewFiles=[];
+let wdsLocalStarted=false,wdsLocalReviewFiles=[],wdsSelectedGroupRecord=null,wdsSelectedGroupEvent=null;
 let wdsLocalWriteInFlight=false;
 function wdsRecordingMetadata(){
  const s=wdsSession;
@@ -8120,17 +8161,80 @@ async function wdsFinishAndSave(){
   }catch{}
  }finally{button.disabled=false;}
 }
+// Local read-only review of one or more independently recorded forecaster groups.
+// These objects are NEVER assigned to stormTracks, exerciseEvents or exerciseClockMs.
+function wdsGroupRecordLabel(record){
+ return record.group.replace('group','Group ')+' · '+(record.initials.join(', ')||'Unnamed')+' · '+record.events+' actions';
+}
+function wdsImportedEventSnapshot(record,index){
+ const events=record.raw.events,event=events[index];if(!event)return null;
+ const track=record.raw.tracks.find(t=>t.id===event.trackId);if(!track)return null;
+ const original=track.originalIssuedPolygon||track.issueSnapshot?.geometry||track.issuedPolygon||[];
+ let polygon=original,bulletin=track.issueSnapshot?.bulletin||track.hidPreviewText||'Initial warning bulletin not saved';
+ let followIndex=0;
+ for(let i=0;i<=index;i++){
+  const e=events[i];if(e.trackId!==track.id)continue;
+  if(e.action==='ISSUE'){
+   polygon=original;bulletin=track.issueSnapshot?.bulletin||track.hidPreviewText||bulletin;
+  }else if(['CONTINUE','CANCEL','EXP'].includes(e.action)){
+   const follow=track.followups?.[followIndex++];
+   if(follow){polygon=follow.updatedPolygon||polygon;bulletin=follow.bulletin||bulletin;}
+  }
+ }
+ if(event.action==='EXPIRE')bulletin='Scheduled expiration only; no new training bulletin.';
+ return {event,track,original,polygon,bulletin};
+}
+function wdsGroupOutline(svg,original,current){
+ svg.replaceChildren();
+ const pts=[...original,...current];if(!pts.length)return;
+ const midlat=pts.reduce((n,p)=>n+p.lat,0)/pts.length,cos=Math.max(.1,Math.cos(midlat*Math.PI/180));
+ const xs=pts.map(p=>p.lon*cos),ys=pts.map(p=>p.lat);
+ const minx=Math.min(...xs),maxx=Math.max(...xs),miny=Math.min(...ys),maxy=Math.max(...ys);
+ const span=Math.max((maxx-minx)/340,(maxy-miny)/140,.0001),cx=(minx+maxx)/2,cy=(miny+maxy)/2;
+ const ns=svg.namespaceURI;
+ for(const [poly,color,width,dash] of [[original,'#dce7f4',2.2,'7 5'],[current,'#49e7fc',3.4,'']]){
+  if(!validSessionPolygon(poly))continue;
+  const path=document.createElementNS(ns,'path');
+  path.setAttribute('d',poly.map((v,i)=>`${i?'L':'M'}${(200+(v.lon*cos-cx)/span).toFixed(2)} ${(90-(v.lat-cy)/span).toFixed(2)}`).join(' ')+' Z');
+  path.setAttribute('fill','none');path.setAttribute('stroke',color);path.setAttribute('stroke-width',String(width));
+  if(dash)path.setAttribute('stroke-dasharray',dash);
+  svg.append(path);
+ }
+}
+function wdsShowImportedGroup(recordId,index=null){
+ const record=wdsLocalReviewFiles.find(x=>x.id===recordId);if(!record)return;
+ wdsSelectedGroupRecord=record.id;wdsSelectedGroupEvent=index;
+ lsrChooseView('groups');
+ const heading=$('wdsGroupReviewHeading'),list=$('wdsGroupReviewEvents');
+ heading.textContent=`${wdsGroupRecordLabel(record)} · Scenario ${record.raw.caseRef?.preparedScenarioId||'unspecified'} · Original simulated start: ${new Date(record.raw.scenario.exerciseStartMs).toISOString()} · READ ONLY`;
+ list.replaceChildren();
+ record.raw.events.forEach((event,i)=>{
+  const button=document.createElement('button');button.type='button';
+  button.textContent=`${new Date(event.atMs).toISOString().slice(11,19)}Z · ${event.action} · ${event.hazardType==='TO.W'?'TOR':'SVR'} · ${event.trackId}`;
+  button.setAttribute('aria-current',String(i===index));
+  button.onclick=()=>wdsShowImportedGroup(record.id,i);list.append(button);
+ });
+ const summary=$('wdsGroupDecisionSummary'),bulletin=$('wdsGroupBulletin'),svg=$('wdsGroupPolygon');
+ const snapshot=index===null?null:wdsImportedEventSnapshot(record,index);
+ if(!snapshot){summary.textContent=`${record.events} decisions loaded. Select one to inspect the historical polygon and bulletin. The active exercise clock and warnings remain unchanged.`;bulletin.textContent='';svg.replaceChildren();return;}
+ const {event,track,original,polygon}=snapshot;
+ summary.textContent=`${record.group.replace('group','Group ')} · ${record.initials.join(', ')} · ${event.action} · ${track.hazardType==='TO.W'?'TOR':'SVR'} ${track.id}\nDecision: ${new Date(event.atMs).toISOString()}\nOriginal outline: white dashed · Decision outline: cyan solid\n${event.detail||'Saved training decision'}\nRead-only outline overview (not a radar map).`;
+ bulletin.textContent=snapshot.bulletin;
+ wdsGroupOutline(svg,original,polygon);
+}
 async function wdsCollectReviewFiles(files){
  if(!files.length)return;
+ if(wdsSession?.role&&wdsSession.role!=='facilitator'){
+  $('reviewFileStatus').textContent='Group-result review is restricted to the facilitator interface.';return;
+ }
  const feedback=[];
  for(const file of files){
   try{
    if(file.size>SESSION_MAX_BYTES)throw Error('larger than the 8 MB limit');
    const raw=JSON.parse(await file.text());
-   validateExerciseSession(raw);
+   validateExerciseSession(raw,{groupReview:true});
    const id=(raw.recording?.roomId||'standalone')+'/'+(raw.recording?.group||file.name);
-   const rec={id,file,raw,group:raw.recording?.group||'standalone',
-    initials:raw.recording?.initials||[],events:raw.events.length};
+   const rec={id,file,raw,group:raw.recording?.group||'standalone',initials:raw.recording?.initials||[],events:raw.events.length};
    const index=wdsLocalReviewFiles.findIndex(x=>x.id===id);
    if(index>=0)wdsLocalReviewFiles[index]=rec;else wdsLocalReviewFiles.push(rec);
    feedback.push('Accepted '+file.name);
@@ -8139,6 +8243,11 @@ async function wdsCollectReviewFiles(files){
  wdsRenderReviewFiles();
  $('reviewFileStatus').textContent=feedback.join(' · ').slice(0,1200);
  $('facilitatorFileStatus').textContent=$('reviewFileStatus').textContent;
+ $('wdsGroupReviewStatus').textContent=$('reviewFileStatus').textContent;
+ if(wdsLocalReviewFiles.length){
+  const preferred=wdsLocalReviewFiles.find(x=>x.id===wdsSelectedGroupRecord)||wdsLocalReviewFiles.at(-1);
+  wdsShowImportedGroup(preferred.id);
+ }
 }
 function wdsRenderReviewFiles(){
  const area=$('wdsAarCollected');if(!area)return;area.replaceChildren();
@@ -8146,11 +8255,11 @@ function wdsRenderReviewFiles(){
  const title=document.createElement('strong');title.textContent='Collected local group recordings ('+wdsLocalReviewFiles.length+')';area.append(title);
  for(const record of wdsLocalReviewFiles){
   const button=document.createElement('button');button.type='button';
-  button.textContent=record.group.replace('group','Group ')+' · '+(record.initials.join(', ')||'Unnamed')+' · '+record.events+' warning actions — Review this group';
-  button.onclick=async()=>{await importExerciseSession(record.file);};
-  area.append(button);
+  button.textContent=wdsGroupRecordLabel(record)+' — Review locally';
+  button.onclick=()=>wdsShowImportedGroup(record.id);area.append(button);
  }
 }
+
 
 
 wdsBeginSession();
