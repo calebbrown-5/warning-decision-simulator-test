@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://wds-training-coordinator.calebbrown225.workers.dev wss://wds-training-coordinator.calebbrown225.workers.dev; img-src 'self' data: blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Warning Decision Simulator · v3.34.5.3 COORDINATED TRAINING PREVIEW</title>
+<title>Warning Decision Simulator · v3.34.5.4 COORDINATED TRAINING PREVIEW</title>
 <style>
 :root{color-scheme:dark;--bg:#0b111c;--panel:#111b29;--border:#28364a;--fg:#eaf2fc;--dim:#9eb0c5;--accent:#65acec;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -431,7 +431,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 
 /* v3.25 local-only historical report selection and replay */
 /* LSR marker inspection is draw-only and does not alter radar or warning state. */
-.lsr-popup{position:absolute;z-index:6;min-width:170px;max-width:min(245px,85%);background:#10283b;border:1px solid #8dbbd6;border-radius:6px;padding:9px 12px 9px 10px;box-shadow:0 5px 18px #000b;color:#e8f6ff;font-size:12px;line-height:1.4;pointer-events:auto;user-select:text}
+.lsr-popup{position:absolute;z-index:6;min-width:190px;max-width:min(320px,92%);background:#10283b;border:1px solid #8dbbd6;border-radius:6px;padding:9px 12px 9px 10px;box-shadow:0 5px 18px #000b;color:#e8f6ff;font-size:12px;line-height:1.4;pointer-events:auto;user-select:text}
 .lsr-popup strong{display:block;padding-right:24px;font-size:12px;color:#fff}
 .lsr-popup span{display:block;font-size:11px;color:#c9ddec;margin-top:3px}
 .lsr-popup button{position:absolute;right:3px;top:3px;padding:0;width:24px;height:24px;font-size:17px;line-height:1;border:0;background:transparent}
@@ -446,6 +446,13 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 .lsr-entry-row{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .lsr-entry label{display:flex;align-items:center;gap:7px;font-size:12px}
 .lsr-entry select{padding:4px 6px;font-size:11px;max-width:175px}
+/* v3.34.5.4: one read-only trainer preview shared by list and map, never sent to trainees. */
+.lsr-hover-preview{position:fixed;z-index:100000;width:min(360px,calc(100vw - 22px));max-height:min(440px,calc(100vh - 22px));overflow:hidden;pointer-events:none;white-space:normal;background:#102638;border:1px solid #7abce1;border-radius:9px;box-shadow:0 12px 30px #000c;color:#ecf8ff;padding:11px 13px;font-size:12px;line-height:1.4}
+.lsr-hover-preview[hidden]{display:none!important}.lsr-hover-preview strong{display:block;margin-bottom:7px;font-size:13px}
+.lsr-hover-preview .preview-row{margin-top:6px;overflow-wrap:anywhere}.lsr-hover-preview .preview-row b{color:#a7d4ef}
+.lsr-hover-preview .preview-remarks{max-height:160px;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
+.trainee-lsr-source{display:block;font-weight:650;color:#b7e5ff;margin-top:4px}.trainee-lsr-remarks{display:block;margin-top:4px;color:#d9eaf5;white-space:pre-wrap;overflow-wrap:anywhere}
+
 .lsr-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;margin:7px 0;color:#c6daea}
 .lsr-legend strong{font-size:13px}
 .lsr-note{font-size:11px;line-height:1.5;color:#c3d7e8;margin:6px 0}
@@ -616,7 +623,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 .wds-review-outline{width:100%;height:auto;max-height:240px;border:1px solid #355d79;background:#071b2c;border-radius:6px}
 @media(max-width:800px){.wds-review-layout{grid-template-columns:1fr}.wds-review-event-list{max-height:190px}}
 </style></head>
-<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.3 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
+<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.4 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
 <section id="wdsCloudPanel" hidden aria-label="Cloudflare coordinated training session">
  <div class="wds-cloud-section">
   <div class="wds-cloud-title">COORDINATED TRAINING · <span id="wdsCloudRole">—</span></div>
@@ -888,6 +895,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
         <div class="lsr-legend"><span><strong style="color:#e8bd4c">●</strong> Hail</span><span><strong style="color:#71b8f0">●</strong> Wind</span><span><strong style="color:#ff606b">●</strong> Tornado</span><span><strong style="color:#818c98">●</strong> Unselected</span></div>
       </div>
       <div class="lsr-entry-row" style="margin:10px 0"><label for="lsrListFilter">Report list</label><select id="lsrListFilter"><option value="all">All reports</option><option value="suggested">Suggested</option><option value="selected">Selected</option></select><span id="lsrSelectionCount" class="facilitator-muted">0 selected</span></div>
+      <p class="lsr-note">Hover a report or map marker to inspect its source and archived remarks. Keyboard users can focus a report row. Original remarks are for facilitator preparation; relocated trainees do not see them by default.</p>
       <div id="lsrList" class="lsr-list" aria-label="Select archived storm reports"></div>
       <div class="lsr-note">Suggested selections use transparent severity, spacing, and timing rules. Historical report coordinates can be approximate. Selection is NOT a verification score.</div>
     </section>
@@ -1922,7 +1930,7 @@ function sessionFingerprint(){
 }
 function sessionExportObject(){
  reconcileExerciseExpirations();
- return {format:SESSION_FORMAT,appVersion:'3.34.5.3',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
+ return {format:SESSION_FORMAT,appVersion:'3.34.5.4',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
   clock:{ms:exerciseClockMs,zone:exerciseClockZone,rate:Number($('exerciseRate').value)},
   tracks:stormTracks.map(t=>JSON.parse(JSON.stringify(t,(k,v)=>['hidHold','preview','history','eventHistory'].includes(k)?undefined:v))),
   selectedTrackId,trackCounter,events:exerciseEvents.map(e=>({...e})),
@@ -2157,7 +2165,7 @@ async function lsrPreviewPreparedCase(launchPath){
    const r=reports.find(q=>q.id===id);return r&&Date.parse(r.eventUtc)+5*60000>startMs;
   }));
   if(lsrPendingFetchId!==caseId)return;
-  lsrPending={caseId,reports,suggested:safeSuggested,site:man.volumes[0].site,basemap:base,
+  lsrPending={caseId,reports,suggested:safeSuggested,site:man.volumes[0].site,basemap:base,relocated:!!man.relocated,
    selected:new Set(stored?stored.selected:safeSuggested),overrides:stored?{...stored.overrides}:{},
    startMs,defaultDelay:stored?Number(stored.defaultDelay):5,lifetimeMinutes:lsrValidLifetime(stored?.lifetimeMinutes)?Number(stored.lifetimeMinutes):60,confirmed:true,focusedId:null,zone:man.geography?.time_zone||'central'};
   lsrPersistPrelaunch();
@@ -2610,6 +2618,74 @@ function lsrMarkerHits(p,x,y,frameMs=lsrFrameTimestamp()){
      .filter(hit=>Number.isFinite(hit.q.x)&&Number.isFinite(hit.q.y)&&Math.hypot(hit.q.x-x,hit.q.y-y)<=11)
      .sort((a,b)=>Math.hypot(a.q.x-x,a.q.y-y)-Math.hypot(b.q.x-x,b.q.y-y));
 }
+// v3.34.5.4 — source/remarks display is deliberately separate from report visibility.
+// Never infer a source or leak an original-location remark into a relocated trainee UI.
+function lsrFirstText(...values){for(const v of values){if(typeof v==='string'&&v.trim())return v.trim();}return '';}
+function lsrOriginalSource(r){return lsrFirstText(r?.source,r?.reportSource,r?.reportingSource,r?.sourceType,r?.original?.source,r?.raw?.source).slice(0,180);}
+function lsrOriginalRemarks(r){return lsrFirstText(r?.remarks,r?.remark,r?.original?.remarks,r?.raw?.remarks,r?.original?.remark).slice(0,1800);}
+function lsrGenericSource(r){
+ const raw=lsrOriginalSource(r);if(!raw)return 'Source not provided';
+ const s=raw.toUpperCase().replace(/[_-]/g,' ').replace(/\s+/g,' ').trim();
+ // Map only recognizable categories; never pass a free-form office or place name through.
+ const kinds=[
+  [/TRAINED (WEATHER )?SPOTTER|^SPOTTER$|SKYWARN/,'TRAINED SPOTTER'],
+  [/STORM CHASER/,'STORM CHASER'],
+  [/LAW ENFORCEMENT|POLICE|SHERIFF/,'LAW ENFORCEMENT'],
+  [/EMERGENCY (MANAGER|MANAGEMENT|MNGR)|^EM$/,'EMERGENCY MANAGEMENT'],
+  [/BROADCAST MEDIA|^MEDIA$|TV STATION|RADIO STATION/,'BROADCAST MEDIA'],
+  [/FIRE DEPARTMENT|FIRE RESCUE/,'FIRE DEPARTMENT'],
+  [/^PUBLIC$|^THE PUBLIC$|GENERAL PUBLIC|^CITIZEN$|SOCIAL MEDIA/,'PUBLIC'],
+  [/^ASOS$|AUTOMATED SURFACE OBSERVING/,'ASOS'],
+  [/^AWOS$|AUTOMATED WEATHER OBSERVING/,'AWOS'],
+  [/MESONET/,'MESONET'],
+  [/COCORAHS/,'COCORAHS'],
+  [/CO-?OP(ERATIVE)? OBSERVER/,'COOPERATIVE OBSERVER'],
+  [/NWS EMPLOYEE|NATIONAL WEATHER SERVICE EMPLOYEE/,'NWS EMPLOYEE'],
+  [/NWS STORM SURVEY|NWS SURVEY/,'NWS STORM SURVEY'],
+  [/TRAINED OBSERVER/,'TRAINED OBSERVER']
+ ];
+ for(const [pattern,label] of kinds){if(pattern.test(s))return label;}
+ // Preserve the fact that a source exists without exposing arbitrary free text.
+ return 'OTHER REPORT SOURCE';
+}
+function lsrTraineeRemarks(r,relocated=Boolean(manifest?.relocated)){
+ if(!relocated)return lsrOriginalRemarks(r);
+ // Future scenario-preparation tools may explicitly supply sanitized remarks.
+ // Never treat unreviewed remarks from the historical source as approved.
+ return r?.traineeRemarksApproved===true?lsrFirstText(r.traineeRemarks).slice(0,600):'';
+}
+function lsrTrainerLocation(r){
+ const name=lsrFirstText(r?.original?.location,r?.original?.city,r?.originalLocation,r?.locationName);
+ const pt=r?.original;
+ const lat=pt?.lat??pt?.latitude,lon=pt?.lon??pt?.longitude;
+ const coords=Number.isFinite(lat)&&Number.isFinite(lon)?` (${Number(lat).toFixed(3)}, ${Number(lon).toFixed(3)})`:'';
+ return name+coords||'Not supplied in prepared report';
+}
+let lsrTrainerPreviewNode=null;
+function lsrHideTrainerPreview(){if(lsrTrainerPreviewNode)lsrTrainerPreviewNode.hidden=true;}
+function lsrTrainerPreview(r,clientX,clientY){
+ if(!$('facilitatorDialog')?.open||lsrView!=='reports')return;
+ if(!lsrTrainerPreviewNode){const node=document.createElement('div');node.className='lsr-hover-preview';node.hidden=true;node.setAttribute('role','tooltip');document.body.append(node);lsrTrainerPreviewNode=node;}
+ const node=lsrTrainerPreviewNode;node.replaceChildren();
+ const title=document.createElement('strong');title.textContent=r.label||r.type||'Storm report';node.append(title);
+ const line=(name,val,extra='')=>{const div=document.createElement('div');div.className='preview-row '+extra;const b=document.createElement('b');b.textContent=name+': ';const span=document.createElement('span');span.textContent=val;div.append(b,span);node.append(div);};
+ line('Event time',lsrUiTime(Date.parse(r.eventUtc)));
+ line('Relocated position',Number(r.relocated?.lat).toFixed(3)+', '+Number(r.relocated?.lon).toFixed(3));
+ line('Original location',lsrTrainerLocation(r));
+ line('Archived source',lsrOriginalSource(r)||'Not present in prepared report');
+ line('Trainee source',lsrGenericSource(r));
+ line('Archived remarks',lsrOriginalRemarks(r)||'Not present in prepared report','preview-remarks');
+ line('Trainee remarks', (lsrEditingPending&&lsrPending?.relocated||!lsrEditingPending&&manifest?.relocated)
+   ?(lsrTraineeRemarks(r,true)||'Hidden by default for relocated cases')
+   :(lsrTraineeRemarks(r,false)||'None'));
+ line('Delivery',lsrUiTime(lsrUiDeliveryAt(r))+' · '+(lsrUiSelected().has(r.id)?'selected':'not selected'));
+ node.hidden=false;
+ const margin=11,w=Math.min(360,window.innerWidth-22);
+ let x=Math.max(margin,Math.min(window.innerWidth-w-margin,clientX+15));
+ node.style.left=x+'px';node.style.top=margin+'px';
+ const h=node.getBoundingClientRect().height;
+ node.style.top=Math.max(margin,Math.min(window.innerHeight-h-margin,clientY+15))+'px';
+}
 function lsrClosePopup(p){if(p?.lsrPopup){p.lsrPopup.remove();p.lsrPopup=null;}if(p)p.lsrPopupId=null;}
 function lsrCloseAllPopups(){for(const pane of panes)lsrClosePopup(pane);}
 function lsrInspectReport(p,r,q){
@@ -2618,9 +2694,11 @@ function lsrInspectReport(p,r,q){
  const title=document.createElement('strong');title.textContent=(r.type==='hail'?'HAIL':r.type==='wind'?'WIND':'TORNADO')+' · '+r.label;
  const observed=document.createElement('span');observed.textContent='Report time: '+exerciseZoneTime(Date.parse(r.eventUtc));
  const received=document.createElement('span');received.textContent='Received: '+exerciseZoneTime(lsrDeliveryAt(r));
+ const source=document.createElement('span');source.textContent='Source: '+lsrGenericSource(r);
+ const remarks=lsrTraineeRemarks(r);const remark=document.createElement('span');remark.textContent=remarks?'Remarks: '+remarks:'';
  const close=document.createElement('button');close.type='button';close.textContent='×';close.title='Close storm report';close.setAttribute('aria-label','Close storm report');close.onclick=()=>lsrClosePopup(p);
- popup.append(title,observed,received,close);p.map.append(popup);p.lsrPopup=popup;p.lsrPopupId=r.id;
- const dims=mapDims(p);popup.style.left=Math.max(5,Math.min(dims.w-250,q.x+12))+'px';popup.style.top=Math.max(5,Math.min(dims.h-102,q.y+12))+'px';
+ popup.append(title,observed,received,source);if(remarks)popup.append(remark);popup.append(close);p.map.append(popup);p.lsrPopup=popup;p.lsrPopupId=r.id;
+ const dims=mapDims(p);popup.style.left=Math.max(5,Math.min(dims.w-325,q.x+12))+'px';popup.style.top=Math.max(5,Math.min(dims.h-170,q.y+12))+'px';
 }
 function lsrDrawSymbol(c,x,y,type,size=9,chosen=true){
  const fill=chosen?(lsrColor[type]||'#fff'):'#687887';
@@ -2721,12 +2799,17 @@ function renderLsrMap(){
 function renderLsrSelection(){
  if(!$('lsrList'))return;
  const filtered=$('lsrListFilter').value;
- const list=$('lsrList');list.replaceChildren();
+ const list=$('lsrList');lsrHideTrainerPreview();list.replaceChildren();
  const shown=lsrUiArchive().filter(r=>filtered==='all'||filtered==='suggested'&&lsrUiSuggested().has(r.id)||filtered==='selected'&&lsrUiSelected().has(r.id));
  $('lsrSelectionCount').textContent=`${lsrUiSelected().size}/${lsrUiArchive().length} selected`;
  if(!lsrUiArchive().length){list.textContent='No archived severe-weather LSRs found. This can be an actual empty event or an unavailable archive; see the retrieval status in the instructor console.';renderLsrMap();return;}
  for(const r of shown.slice(0,600)){
   const outer=document.createElement('div');outer.className='lsr-entry';outer.dataset.focused=String(lsrUiFocused()===r.id);outer.dataset.reportId=r.id;
+  outer.addEventListener('mouseenter',e=>lsrTrainerPreview(r,e.clientX,e.clientY));
+  outer.addEventListener('mousemove',e=>lsrTrainerPreview(r,e.clientX,e.clientY));
+  outer.addEventListener('mouseleave',lsrHideTrainerPreview);
+  outer.addEventListener('focusin',()=>{const rect=outer.getBoundingClientRect();lsrTrainerPreview(r,rect.right,rect.top+8);});
+  outer.addEventListener('focusout',e=>{if(!outer.contains(e.relatedTarget))lsrHideTrainerPreview();});
   const line=document.createElement('div');line.className='lsr-entry-row';
   const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=lsrUiSelected().has(r.id);check.onchange=()=>lsrToggle(r.id,check.checked);
   const strong=document.createElement('strong');strong.textContent=r.label;
@@ -2779,7 +2862,10 @@ function updateTraineeLsrs(){
  list.replaceChildren();$('traineeLsrs').classList.toggle('hidden',!visible.length);
  for(const r of visible){
   const b=document.createElement('button');b.type='button';b.className='trainee-lsr-item';
-  b.textContent=`${r.label} · ${exerciseZoneTime(Date.parse(r.eventUtc))}`;
+  const header=document.createElement('span');header.textContent=`${r.label} · ${exerciseZoneTime(Date.parse(r.eventUtc))}`;
+  const source=document.createElement('span');source.className='trainee-lsr-source';source.textContent='Source: '+lsrGenericSource(r);
+  b.append(header,source);
+  const remarks=lsrTraineeRemarks(r);if(remarks){const note=document.createElement('span');note.className='trainee-lsr-remarks';note.textContent=remarks;b.append(note);}
   b.onclick=()=>{center={lat:r.relocated.lat,lon:r.relocated.lon};refreshView();requestTrackPaint();};list.append(b);
  }
  requestTrackPaint();
@@ -2823,6 +2909,15 @@ function attachLsrControls(){
  $('lsrUseSuggested').onclick=()=>{if(lsrEditingPending&&lsrPending)lsrPending.selected=new Set(lsrPending.suggested);else lsrSelected=new Set(lsrSuggested);lsrScheduleChanges();};
  $('lsrSelectAll').onclick=()=>{if(lsrEditingPending&&lsrPending)lsrPending.selected=new Set(lsrPending.reports.map(r=>r.id));else lsrSelected=new Set(lsrArchive.map(r=>r.id));lsrScheduleChanges();};
  $('lsrSelectNone').onclick=()=>{lsrUiSelected().clear();lsrScheduleChanges();};
+ $('lsrSelectMap').addEventListener('mousemove',e=>{
+  const canvas=$('lsrSelectMap'),rect=canvas.getBoundingClientRect();
+  const x=(e.clientX-rect.left)*canvas.width/rect.width,y=(e.clientY-rect.top)*canvas.height/rect.height;
+  let nearest=null,best=Infinity;
+  for(const hit of lsrMapHits){const d=Math.hypot(x-hit.x,y-hit.y);if(d<best){nearest=hit;best=d;}}
+  if(nearest&&best<=14){const r=lsrUiArchive().find(q=>q.id===nearest.id);if(r)lsrTrainerPreview(r,e.clientX,e.clientY);}
+  else lsrHideTrainerPreview();
+ });
+ $('lsrSelectMap').addEventListener('mouseleave',lsrHideTrainerPreview);
  $('lsrSelectMap').onclick=e=>{
   const canvas=$('lsrSelectMap'),rect=canvas.getBoundingClientRect(),x=(e.clientX-rect.left)*canvas.width/rect.width,y=(e.clientY-rect.top)*canvas.height/rect.height;
   let closest=null,dist=Infinity;for(const hit of lsrMapHits){const d=Math.hypot(x-hit.x,y-hit.y);if(d<dist){dist=d;closest=hit;}}
