@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://wds-training-coordinator.calebbrown225.workers.dev wss://wds-training-coordinator.calebbrown225.workers.dev; img-src 'self' data: blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Warning Decision Simulator · v3.34.5.4.3 COORDINATED TRAINING PREVIEW</title>
+<title>Warning Decision Simulator · v3.34.5.4.4 COORDINATED TRAINING PREVIEW</title>
 <style>
 :root{color-scheme:dark;--bg:#0b111c;--panel:#111b29;--border:#28364a;--fg:#eaf2fc;--dim:#9eb0c5;--accent:#65acec;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -458,7 +458,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 .lsr-entry-row{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .lsr-entry label{display:flex;align-items:center;gap:7px;font-size:12px}
 .lsr-entry select{padding:4px 6px;font-size:11px;max-width:175px}
-/* v3.34.5.4.3: one read-only trainer preview shared by list and map, never sent to trainees. */
+/* v3.34.5.4.4: one read-only trainer preview shared by list and map, never sent to trainees. */
 .lsr-hover-preview{position:absolute;z-index:100000;width:min(360px,calc(100vw - 22px));max-height:min(440px,calc(92dvh - 22px));overflow:hidden;pointer-events:none;white-space:normal;background:#102638;border:1px solid #7abce1;border-radius:9px;box-shadow:0 12px 30px #000c;color:#ecf8ff;padding:11px 13px;font-size:12px;line-height:1.4}
 .lsr-hover-preview[hidden]{display:none!important}.lsr-hover-preview strong{display:block;margin-bottom:7px;font-size:13px}
 .lsr-hover-preview .preview-row{margin-top:6px;overflow-wrap:anywhere}.lsr-hover-preview .preview-row b{color:#a7d4ef}
@@ -471,6 +471,27 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 .lsr-hover-preview--cluster .lsr-hover-cluster-event{font-weight:600;overflow-wrap:anywhere;}
 .lsr-hover-preview--cluster .lsr-hover-cluster-meta{color:#b8d8eb;font-size:11px;overflow-wrap:anywhere;}
 .lsr-hover-preview--cluster .lsr-hover-cluster-help{color:#b8d8eb;font-size:11px;margin-top:8px;}
+/* v3.34.5.4.4: pinned multi-report inspector; selections shared with list. */
+.lsr-hover-preview--cluster{width:min(440px,calc(100vw - 22px));pointer-events:none;}
+.lsr-hover-preview--cluster.lsr-hover-preview--pinned{pointer-events:auto;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-header{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-11px;background:#102638;z-index:1;padding:5px 0 7px;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-header strong{margin:0;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-header button{font-size:11px;padding:4px 7px;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-row{border:1px solid #36536b;border-radius:6px;background:#153349;padding:6px;margin:5px 0;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-row:first-of-type{border-top:1px solid #36536b;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-row[data-expanded="true"]{border-color:#7abce1;background:#1a3e56;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-row label{display:flex;align-items:center;margin:0;cursor:pointer;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-row input[type=checkbox]{margin:0;min-width:16px;min-height:16px;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-expand{font:inherit;background:none;border:0;padding:0;text-align:left;color:#f0f8ff;cursor:pointer;width:100%;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-expand:focus-visible{outline:2px solid #7abce1;border-radius:4px;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-details{grid-column:1 / -1;margin:3px 0 2px 23px;max-height:210px;overflow-y:auto;overflow-wrap:anywhere;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-details[hidden]{display:none;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-details .preview-row{margin:4px 0;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-actions{display:flex;flex-wrap:wrap;gap:5px;align-items:center;position:sticky;bottom:-11px;background:#102638;padding:9px 0 3px;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-actions button{font-size:11px;padding:4px 7px;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-actions span{margin-right:auto;color:#c2d8e8;}
+.lsr-hover-preview--cluster .lsr-hover-cluster-row input:disabled{opacity:.5;}
+
 
 .trainee-lsr-source{display:block;font-weight:650;color:#b7e5ff;margin-top:4px}.trainee-lsr-remarks{display:block;margin-top:4px;color:#d9eaf5;white-space:pre-wrap;overflow-wrap:anywhere}
 
@@ -644,7 +665,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 .wds-review-outline{width:100%;height:auto;max-height:240px;border:1px solid #355d79;background:#071b2c;border-radius:6px}
 @media(max-width:800px){.wds-review-layout{grid-template-columns:1fr}.wds-review-event-list{max-height:190px}}
 </style></head>
-<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.4.3 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
+<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.4.4 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
 <section id="wdsCloudPanel" hidden aria-label="Cloudflare coordinated training session">
  <div class="wds-cloud-section">
   <div class="wds-cloud-title">COORDINATED TRAINING · <span id="wdsCloudRole">—</span></div>
@@ -1960,7 +1981,7 @@ function sessionFingerprint(){
 }
 function sessionExportObject(){
  reconcileExerciseExpirations();
- return {format:SESSION_FORMAT,appVersion:'3.34.5.4.3',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
+ return {format:SESSION_FORMAT,appVersion:'3.34.5.4.4',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
   clock:{ms:exerciseClockMs,zone:exerciseClockZone,rate:Number($('exerciseRate').value)},
   tracks:stormTracks.map(t=>JSON.parse(JSON.stringify(t,(k,v)=>['hidHold','preview','history','eventHistory'].includes(k)?undefined:v))),
   selectedTrackId,trackCounter,events:exerciseEvents.map(e=>({...e})),
@@ -2649,7 +2670,7 @@ function lsrMarkerHits(p,x,y,frameMs=lsrFrameTimestamp()){
      .filter(hit=>Number.isFinite(hit.q.x)&&Number.isFinite(hit.q.y)&&Math.hypot(hit.q.x-x,hit.q.y-y)<=11)
      .sort((a,b)=>Math.hypot(a.q.x-x,a.q.y-y)-Math.hypot(b.q.x-x,b.q.y-y));
 }
-// v3.34.5.4.3 — source/remarks display is deliberately separate from report visibility.
+// v3.34.5.4.4 — source/remarks display is deliberately separate from report visibility.
 // Never infer a source or leak an original-location remark into a relocated trainee UI.
 function lsrFirstText(...values){for(const v of values){if(typeof v==='string'&&v.trim())return v.trim();}return '';}
 function lsrOriginalSource(r){return lsrFirstText(r?.source,r?.SOURCE,r?.reportSource,r?.reportingSource,r?.sourceType,r?.original?.source,r?.raw?.source).slice(0,180);}
@@ -2692,8 +2713,12 @@ function lsrTrainerLocation(r){
  const coords=Number.isFinite(lat)&&Number.isFinite(lon)?` (${Number(lat).toFixed(3)}, ${Number(lon).toFixed(3)})`:'';
  return name+coords||'Not supplied in prepared report';
 }
-let lsrTrainerPreviewNode=null;
-function lsrHideTrainerPreview(){if(lsrTrainerPreviewNode)lsrTrainerPreviewNode.hidden=true;}
+let lsrTrainerPreviewNode=null,lsrPinnedCluster=null;
+function lsrHideTrainerPreview(force=false){
+ if(lsrPinnedCluster&&!force)return;
+ if(force)lsrPinnedCluster=null;
+ if(lsrTrainerPreviewNode)lsrTrainerPreviewNode.hidden=true;
+}
 function lsrGetTrainerPreviewNode(){
  if(!$('facilitatorDialog')?.open||lsrView!=='reports')return null;
  if(!lsrTrainerPreviewNode){
@@ -2709,7 +2734,7 @@ function lsrGetTrainerPreviewNode(){
 function lsrPlaceTrainerPreview(node,clientX,clientY){
  node.hidden=false;
  const dialog=$('facilitatorDialog'),bounds=dialog.getBoundingClientRect();
- const margin=11,w=Math.min(360,Math.max(180,bounds.width-2*margin));
+ const margin=11,w=Math.min(node.classList.contains('lsr-hover-preview--cluster')?440:360,Math.max(180,bounds.width-2*margin));
  const x=Math.max(margin,Math.min(bounds.width-w-margin,clientX-bounds.left+15));
  node.style.width=w+'px';node.style.left=x+'px';node.style.top=margin+'px';
  // Placement is inside the native dialog top layer, avoiding concealed popups.
@@ -2717,6 +2742,7 @@ function lsrPlaceTrainerPreview(node,clientX,clientY){
  node.style.top=Math.max(margin,Math.min(bounds.height-h-margin,clientY-bounds.top+15))+'px';
 }
 function lsrTrainerPreview(r,clientX,clientY){
+ if(lsrPinnedCluster)return;
  const node=lsrGetTrainerPreviewNode();if(!node)return;
  node.classList.remove('lsr-hover-preview--cluster');node.replaceChildren();
  const title=document.createElement('strong');title.textContent=r.label||r.type||'Storm report';node.append(title);
@@ -2733,29 +2759,99 @@ function lsrTrainerPreview(r,clientX,clientY){
  line('Delivery',lsrUiTime(lsrUiDeliveryAt(r))+' · '+(lsrUiSelected().has(r.id)?'selected':'not selected'));
  lsrPlaceTrainerPreview(node,clientX,clientY);
 }
-// Hover is a read-only summary of *all* reports under this visible marker.
-// The click chooser is unchanged and remains the place to select individuals.
-function lsrTrainerClusterPreview(group,clientX,clientY){
+// A cluster is previewed chronologically on hover. Clicking pins the same popup
+// so individual rows can be expanded and checked without scrolling below the map.
+function lsrTrainerClusterPreview(group,clientX,clientY,pinned=false){
  const node=lsrGetTrainerPreviewNode();if(!node)return;
+ if(lsrPinnedCluster&&!pinned)return;
+ const ids=[...new Set(group.hits.map(h=>h.id))];
  const lookup=new Map(lsrUiArchive().map(r=>[r.id,r]));
- const reports=[...new Set(group.hits.map(h=>h.id))].map(id=>lookup.get(id)).filter(Boolean)
+ const reports=ids.map(id=>lookup.get(id)).filter(Boolean)
   .sort((a,b)=>Date.parse(a.eventUtc)-Date.parse(b.eventUtc)||String(a.id).localeCompare(String(b.id)));
- if(reports.length<2){if(reports.length)lsrTrainerPreview(reports[0],clientX,clientY);return;}
- node.classList.add('lsr-hover-preview--cluster');node.replaceChildren();
- const title=document.createElement('strong');title.textContent=reports.length+' reports at this marker';node.append(title);
+ if(reports.length<2){if(reports.length&&!pinned)lsrTrainerPreview(reports[0],clientX,clientY);return;}
+ if(pinned){
+  const prior=lsrPinnedCluster;
+  lsrPinnedCluster={ids,x:clientX,y:clientY,expandedId:prior?.ids?.join('|')===ids.join('|')?prior.expandedId:null};
+ }
+ const savedScroll=pinned?node.scrollTop:0;
+ node.classList.add('lsr-hover-preview--cluster');node.classList.toggle('lsr-hover-preview--pinned',Boolean(pinned));node.replaceChildren();
+ node.setAttribute('role',pinned?'dialog':'tooltip');
+ node.setAttribute('aria-label',reports.length+' reports at this location');
+ const header=document.createElement('div');header.className='lsr-hover-cluster-header';
+ const title=document.createElement('strong');title.textContent=reports.length+' reports at this location';header.append(title);
+ if(pinned){
+  const close=document.createElement('button');close.type='button';close.textContent='Close';close.setAttribute('aria-label','Close report selection popup');
+  close.onclick=()=>{lsrHideTrainerPreview(true);$('lsrSelectMap')?.focus({preventScroll:true});};header.append(close);
+ }
+ node.append(header);
+ const detailRows=new Map(),expandButtons=new Map();
+ function expand(id){
+  for(const [rowId,entry] of detailRows){
+   const visible=rowId===id;entry.details.hidden=!visible;entry.row.dataset.expanded=String(visible);
+   expandButtons.get(rowId).setAttribute('aria-expanded',String(visible));
+  }
+  if(lsrPinnedCluster)lsrPinnedCluster.expandedId=id;
+ }
  for(const r of reports){
-  const row=document.createElement('div');row.className='lsr-hover-cluster-row';
-  const mark=document.createElement('span');mark.className='lsr-hover-cluster-selected';
-  mark.textContent=lsrUiSelected().has(r.id)?'✓':'';
+  const row=document.createElement('div');row.className='lsr-hover-cluster-row';row.dataset.reportId=r.id;
+  const mark=document.createElement(pinned?'label':'span');mark.className='lsr-hover-cluster-selected';
+  if(pinned){
+   const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=lsrUiSelected().has(r.id);
+   checkbox.setAttribute('aria-label','Include '+(r.label||r.type||'report')+' at '+lsrUiTime(Date.parse(r.eventUtc))+' UTC');
+   checkbox.onchange=()=>{
+    const current=lsrPinnedCluster;if(!current)return;
+    const currentScroll=node.scrollTop;
+    lsrUiSetFocused(r.id);lsrToggle(r.id,checkbox.checked);
+    lsrTrainerClusterPreview({hits:current.ids.map(id=>({id}))},current.x,current.y,true);
+    node.scrollTop=currentScroll;
+    const fresh=[...node.querySelectorAll('input[type=checkbox]')].find(c=>c.dataset.reportId===r.id);
+    if(fresh)fresh.focus({preventScroll:true});
+   };
+   checkbox.dataset.reportId=r.id;mark.append(checkbox);
+  }else mark.textContent=lsrUiSelected().has(r.id)?'✓':'';
   const cell=document.createElement('div');
+  const expandButton=document.createElement('button');expandButton.type='button';expandButton.className='lsr-hover-cluster-expand';
+  expandButton.setAttribute('aria-expanded','false');expandButton.setAttribute('aria-label','Details for '+(r.label||r.type||'report'));
   const event=document.createElement('div');event.className='lsr-hover-cluster-event';event.textContent=r.label||r.type||'Storm report';
   const meta=document.createElement('div');meta.className='lsr-hover-cluster-meta';
   meta.textContent=lsrUiTime(Date.parse(r.eventUtc))+' UTC · Source: '+lsrGenericSource(r);
-  cell.append(event,meta);row.append(mark,cell);node.append(row);
+  expandButton.append(event,meta);cell.append(expandButton);row.append(mark,cell);
+  const details=document.createElement('div');details.className='lsr-hover-cluster-details';details.hidden=true;
+  const line=(name,value)=>{const element=document.createElement('div');element.className='preview-row';
+   const b=document.createElement('b');b.textContent=name+': ';const valueNode=document.createElement('span');valueNode.textContent=value;
+   element.append(b,valueNode);details.append(element);};
+  line('Original location',lsrTrainerLocation(r));
+  line('Relocated position',Number(r.relocated?.lat).toFixed(3)+', '+Number(r.relocated?.lon).toFixed(3));
+  line('Archived source',lsrOriginalSource(r)||'Not present in prepared report');
+  line('Original remarks',lsrOriginalRemarks(r)||'Not present in prepared report');
+  line('Trainee remarks',(lsrEditingPending&&lsrPending?.relocated||!lsrEditingPending&&manifest?.relocated)
+   ?(lsrTraineeRemarks(r,true)||'Hidden by default for relocated cases'):(lsrTraineeRemarks(r,false)||'None'));
+  line('Reveal time',lsrUiTime(lsrUiDeliveryAt(r))+' UTC');
+  row.append(details);node.append(row);detailRows.set(r.id,{row,details});expandButtons.set(r.id,expandButton);
+  expandButton.onclick=()=>expand(details.hidden?r.id:null);
+  // In hover mode, moving into a row previews that report; pinned mode also supports click/touch/keyboard.
+  row.addEventListener('mouseenter',()=>{if(pinned)expand(r.id);});
  }
- const help=document.createElement('div');help.className='lsr-hover-cluster-help';
- help.textContent='✓ = selected · Click marker to inspect full remarks or select individual reports';
- node.append(help);lsrPlaceTrainerPreview(node,clientX,clientY);
+ if(pinned){
+  const actions=document.createElement('div');actions.className='lsr-hover-cluster-actions';
+  const count=document.createElement('span');count.textContent=reports.filter(r=>lsrUiSelected().has(r.id)).length+' of '+reports.length+' selected';actions.append(count);
+  for(const [caption,chosen] of [['Select all',true],['Clear all',false]]){
+   const button=document.createElement('button');button.type='button';button.textContent=caption;
+   button.onclick=()=>{
+    const current=lsrPinnedCluster;if(!current)return;
+    const scroll=node.scrollTop;
+    for(const r of reports){if(chosen)lsrUiSelected().add(r.id);else lsrUiSelected().delete(r.id);}
+    lsrScheduleChanges();lsrTrainerClusterPreview({hits:current.ids.map(id=>({id}))},current.x,current.y,true);node.scrollTop=scroll;
+   };actions.append(button);
+  }
+  node.append(actions);
+  expand(lsrPinnedCluster.expandedId);
+ }else{
+  const help=document.createElement('div');help.className='lsr-hover-cluster-help';
+  help.textContent='✓ = selected · Click marker to pin this list and select reports';node.append(help);
+ }
+ lsrPlaceTrainerPreview(node,clientX,clientY);
+ if(pinned)node.scrollTop=savedScroll;
 }
 function lsrClosePopup(p){if(p?.lsrPopup){p.lsrPopup.remove();p.lsrPopup=null;}if(p)p.lsrPopupId=null;}
 function lsrCloseAllPopups(){for(const pane of panes)lsrClosePopup(pane);}
@@ -2801,7 +2897,7 @@ function lsrRenderPreview(){
  }
  if(rows.length>80){const note=document.createElement('div');note.textContent=`${rows.length-80} additional scheduled reports not shown in this preview.`;container.append(note);}
 }
-function lsrChooseView(view){lsrView=['reports','decisions','library','verification','aar','groups'].includes(view)?view:'decisions';
+function lsrChooseView(view){lsrView=['reports','decisions','library','verification','aar','groups'].includes(view)?view:'decisions';if(lsrView!=='reports')lsrHideTrainerPreview(true);
  $('facilitatorVerificationView').classList.toggle('hidden',lsrView!=='verification');
  $('facilitatorAarView').classList.toggle('hidden',lsrView!=='aar');
  if(lsrView!=='aar'&&$('facilitatorDialog').classList.contains('aar-widescreen')){$('facilitatorDialog').classList.remove('aar-widescreen');$('aarWideView').setAttribute('aria-pressed','false');$('aarWideView').textContent='⤢ Widen viewer';}
@@ -2828,7 +2924,7 @@ function lsrChooseView(view){lsrView=['reports','decisions','library','verificat
   // The canvas is keyboard-ready immediately on entering this view.
   if($('facilitatorDialog').open)$('aarRadar').focus({preventScroll:true});
  }}
-// v3.34.5.4.3 — facilitator-only LSR map camera. These values change only
+// v3.34.5.4.4 — facilitator-only LSR map camera. These values change only
 // the map selection canvas; they never change radar positions or case records.
 let lsrMapCamera=null,lsrMapCameraKey='',lsrMapDrag=null,lsrMapSuppressClick=false;
 let lsrMapClusterIds=[];
@@ -2907,7 +3003,7 @@ function lsrMapGroupAt(x,y){
  }
  return best;
 }
-function lsrMapHideCluster(){lsrMapClusterIds=[];const n=$('lsrMapCluster');if(n){n.hidden=true;n.replaceChildren();}}
+function lsrMapHideCluster(){lsrMapClusterIds=[];const n=$('lsrMapCluster');if(n){n.hidden=true;n.replaceChildren();}lsrHideTrainerPreview(true);}
 function lsrMapShowCluster(hits){
  const node=$('lsrMapCluster');if(!node)return;
  const ids=[...new Set(hits.map(h=>h.id))];
@@ -2984,7 +3080,7 @@ function renderLsrMap(){
  }
  ctx.textAlign='left';ctx.textBaseline='alphabetic';
  ctx.fillStyle='#b9d5e3';ctx.font='11px sans-serif';
- ctx.fillText(`${lsrUiArchive().length} historical reports · wheel zoom · drag pan · hover groups · click to inspect`,10,H-6);
+ ctx.fillText(`${lsrUiArchive().length} historical reports · wheel zoom · drag pan · hover groups · click to select`,10,H-6);
  const label=$('lsrMapZoomStatus');if(label)label.textContent=lsrMapEnsureCamera().zoom.toFixed(1)+'×';
 }
 function renderLsrSelection(){
@@ -3127,7 +3223,7 @@ function attachLsrControls(){
    }
    d.lastX=e.clientX;d.lastY=e.clientY;return;
   }
-  if(lsrView!=='reports')return;
+  if(lsrView!=='reports'||lsrPinnedCluster)return;
   const p=lsrMapEventPoint(e),group=lsrMapGroupAt(p.x,p.y);
   if(group?.hits.length>1)lsrTrainerClusterPreview(group,e.clientX,e.clientY);
   else if(group?.hits.length===1){
@@ -3148,9 +3244,19 @@ function attachLsrControls(){
   if(lsrMapSuppressClick){lsrMapSuppressClick=false;return;}
   if(lsrView!=='reports')return;
   const p=lsrMapEventPoint(e),group=lsrMapGroupAt(p.x,p.y);
-  if(group?.hits.length>1){lsrMapShowCluster(group.hits);return;}
-  lsrMapHideCluster();
+  if(group?.hits.length>1){
+   lsrMapHideCluster();lsrHideTrainerPreview(true);
+   lsrTrainerClusterPreview(group,e.clientX,e.clientY,true);
+   return;
+  }
+  lsrMapHideCluster();lsrHideTrainerPreview(true);
   if(group?.hits.length===1){const id=group.hits[0].id;lsrUiSetFocused(id);lsrToggle(id,!lsrUiSelected().has(id));}
+ });
+ $('facilitatorDialog').addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&lsrPinnedCluster){e.preventDefault();e.stopPropagation();lsrHideTrainerPreview(true);$('lsrSelectMap')?.focus({preventScroll:true});}
+ });
+ $('facilitatorDialog').addEventListener('pointerdown',e=>{
+  if(lsrPinnedCluster&&e.target!==map&&!lsrTrainerPreviewNode?.contains(e.target))lsrHideTrainerPreview(true);
  });
  map.addEventListener('dblclick',e=>{if(lsrView!=='reports')return;e.preventDefault();const p=lsrMapEventPoint(e);lsrMapZoom(1.75,p.x,p.y);});
  map.addEventListener('keydown',e=>{
@@ -3162,7 +3268,7 @@ function attachLsrControls(){
   else if(e.key==='ArrowDown')lsrMapPanPixels(0,-amount);
   else if(e.key==='+'||e.key==='=')lsrMapZoom(1.5);
   else if(e.key==='-'||e.key==='_')lsrMapZoom(1/1.5);
-  else if(e.key==='Escape')lsrMapHideCluster();
+  else if(e.key==='Escape'){lsrMapHideCluster();lsrHideTrainerPreview(true);}
   else return;
   e.preventDefault();
  });
