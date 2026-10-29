@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://wds-training-coordinator.calebbrown225.workers.dev wss://wds-training-coordinator.calebbrown225.workers.dev; img-src 'self' data: blob:; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'self'"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Warning Decision Simulator · v3.34.5.4 COORDINATED TRAINING PREVIEW</title>
+<title>Warning Decision Simulator · v3.34.5.4.1 COORDINATED TRAINING PREVIEW</title>
 <style>
 :root{color-scheme:dark;--bg:#0b111c;--panel:#111b29;--border:#28364a;--fg:#eaf2fc;--dim:#9eb0c5;--accent:#65acec;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -446,8 +446,8 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 .lsr-entry-row{display:flex;justify-content:space-between;gap:8px;align-items:center}
 .lsr-entry label{display:flex;align-items:center;gap:7px;font-size:12px}
 .lsr-entry select{padding:4px 6px;font-size:11px;max-width:175px}
-/* v3.34.5.4: one read-only trainer preview shared by list and map, never sent to trainees. */
-.lsr-hover-preview{position:fixed;z-index:100000;width:min(360px,calc(100vw - 22px));max-height:min(440px,calc(100vh - 22px));overflow:hidden;pointer-events:none;white-space:normal;background:#102638;border:1px solid #7abce1;border-radius:9px;box-shadow:0 12px 30px #000c;color:#ecf8ff;padding:11px 13px;font-size:12px;line-height:1.4}
+/* v3.34.5.4.1: one read-only trainer preview shared by list and map, never sent to trainees. */
+.lsr-hover-preview{position:absolute;z-index:100000;width:min(360px,calc(100vw - 22px));max-height:min(440px,calc(92dvh - 22px));overflow:hidden;pointer-events:none;white-space:normal;background:#102638;border:1px solid #7abce1;border-radius:9px;box-shadow:0 12px 30px #000c;color:#ecf8ff;padding:11px 13px;font-size:12px;line-height:1.4}
 .lsr-hover-preview[hidden]{display:none!important}.lsr-hover-preview strong{display:block;margin-bottom:7px;font-size:13px}
 .lsr-hover-preview .preview-row{margin-top:6px;overflow-wrap:anywhere}.lsr-hover-preview .preview-row b{color:#a7d4ef}
 .lsr-hover-preview .preview-remarks{max-height:160px;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -623,7 +623,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 .wds-review-outline{width:100%;height:auto;max-height:240px;border:1px solid #355d79;background:#071b2c;border-radius:6px}
 @media(max-width:800px){.wds-review-layout{grid-template-columns:1fr}.wds-review-event-list{max-height:190px}}
 </style></head>
-<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.4 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
+<body><header><div><h1>Warning Decision Simulator <span class="tag">v3.34.5.4.1 TRAINING PREVIEW</span></h1><p><span id="activeScenarioName">KLNX · Scenario Alpha</span> · historical date concealed · TRAINING ONLY</p></div><div style="display:flex;align-items:center;gap:13px"><button type="button" id="openFacilitator" class="instructor-open" title="Local instructor console; not access-controlled">Instructor console</button><div style="text-align:right"><div class="clock" id="displayTime">Loading case…</div><div class="muted small" id="timeRange">Exercise clock · scenario date hidden</div></div></div></header><div class="hosted-notice"><b>TRAINING PREVIEW</b> · Standalone unless launched from a private coordinated-session invitation · <a href="./index.html" style="color:#b6e7ff">Choose prepared case</a></div>
 <section id="wdsCloudPanel" hidden aria-label="Cloudflare coordinated training session">
  <div class="wds-cloud-section">
   <div class="wds-cloud-title">COORDINATED TRAINING · <span id="wdsCloudRole">—</span></div>
@@ -1930,7 +1930,7 @@ function sessionFingerprint(){
 }
 function sessionExportObject(){
  reconcileExerciseExpirations();
- return {format:SESSION_FORMAT,appVersion:'3.34.5.4',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
+ return {format:SESSION_FORMAT,appVersion:'3.34.5.4.1',recording:wdsRecordingMetadata(),scenario:sessionFingerprint(),caseRef:{preparedScenarioId:ACTIVE_SCENARIO_ID||manifest?.scenario_id||null,lsrLocationBasis:'prepared-case-relocated'},
   clock:{ms:exerciseClockMs,zone:exerciseClockZone,rate:Number($('exerciseRate').value)},
   tracks:stormTracks.map(t=>JSON.parse(JSON.stringify(t,(k,v)=>['hidHold','preview','history','eventHistory'].includes(k)?undefined:v))),
   selectedTrackId,trackCounter,events:exerciseEvents.map(e=>({...e})),
@@ -2172,7 +2172,8 @@ async function lsrPreviewPreparedCase(launchPath){
   lsrEditingPending=true;
   $('lsrDefaultDelay').value=String(lsrPending.defaultDelay);$('lsrMarkerLifetime').value=String(lsrPending.lifetimeMinutes);
   $('scenarioPrelaunchReports').textContent=`PRE-LAUNCH: ${reports.length} LSRs loaded · ${safeSuggested.size} suggested for delivery. Review them below, then Launch Exercise.`;
-  $('lsrAvailability').textContent=`PRE-LAUNCH REVIEW · ${reports.length} LSRs (${suggested.size} suggested) for prepared case ${caseId}. Exercise not launched.`;
+  const storedSources=reports.filter(r=>!!lsrOriginalSource(r)).length;
+  $('lsrAvailability').textContent=`PRE-LAUNCH REVIEW · ${reports.length} LSRs (${suggested.size} suggested); sources preserved: ${storedSources}/${reports.length}. Prepared case ${caseId}. Exercise not launched.`;
   $('lsrMapContext').textContent='PRE-LAUNCH LSR PREVIEW · Reports and destination geography belong to the newly prepared scenario. These choices do not change any currently running exercise.';
   lsrUpdateSetupSummary();
   lsrChooseView('reports');
@@ -2582,7 +2583,7 @@ function attachScenarioBuilder(){
  };
  $('scenarioLaunch').onclick=()=>$('scenarioLaunchBottom').click();
  for(const id of ['scenarioSource','scenarioDestination','scenarioWfo','scenarioStartDate','scenarioStartHour','scenarioStartMinute','scenarioEndDate','scenarioEndHour','scenarioEndMinute'])$(id).addEventListener('change',()=>{scenarioDiscovered=null;$('scenarioDownload').disabled=true;$('scenarioLaunch').disabled=true;lsrStopPrelaunchPreview();});
- $('facilitatorDialog').addEventListener('close',()=>{if(scenarioStatusTimer!==null){clearInterval(scenarioStatusTimer);scenarioStatusTimer=null;}});
+ $('facilitatorDialog').addEventListener('close',()=>{lsrHideTrainerPreview();if(scenarioStatusTimer!==null){clearInterval(scenarioStatusTimer);scenarioStatusTimer=null;}});
 }
 
 // v3.22 — facilitator workspace on ONE browser session only. This is interface
@@ -2618,13 +2619,13 @@ function lsrMarkerHits(p,x,y,frameMs=lsrFrameTimestamp()){
      .filter(hit=>Number.isFinite(hit.q.x)&&Number.isFinite(hit.q.y)&&Math.hypot(hit.q.x-x,hit.q.y-y)<=11)
      .sort((a,b)=>Math.hypot(a.q.x-x,a.q.y-y)-Math.hypot(b.q.x-x,b.q.y-y));
 }
-// v3.34.5.4 — source/remarks display is deliberately separate from report visibility.
+// v3.34.5.4.1 — source/remarks display is deliberately separate from report visibility.
 // Never infer a source or leak an original-location remark into a relocated trainee UI.
 function lsrFirstText(...values){for(const v of values){if(typeof v==='string'&&v.trim())return v.trim();}return '';}
-function lsrOriginalSource(r){return lsrFirstText(r?.source,r?.reportSource,r?.reportingSource,r?.sourceType,r?.original?.source,r?.raw?.source).slice(0,180);}
-function lsrOriginalRemarks(r){return lsrFirstText(r?.remarks,r?.remark,r?.original?.remarks,r?.raw?.remarks,r?.original?.remark).slice(0,1800);}
+function lsrOriginalSource(r){return lsrFirstText(r?.source,r?.SOURCE,r?.reportSource,r?.reportingSource,r?.sourceType,r?.original?.source,r?.raw?.source).slice(0,180);}
+function lsrOriginalRemarks(r){return lsrFirstText(r?.remarks,r?.REMARK,r?.remark,r?.original?.remarks,r?.raw?.remarks,r?.original?.remark).slice(0,1800);}
 function lsrGenericSource(r){
- const raw=lsrOriginalSource(r);if(!raw)return 'Source not provided';
+ const raw=lsrOriginalSource(r);if(!raw)return 'Source unavailable in prepared case';
  const s=raw.toUpperCase().replace(/[_-]/g,' ').replace(/\s+/g,' ').trim();
  // Map only recognizable categories; never pass a free-form office or place name through.
  const kinds=[
@@ -2665,7 +2666,7 @@ let lsrTrainerPreviewNode=null;
 function lsrHideTrainerPreview(){if(lsrTrainerPreviewNode)lsrTrainerPreviewNode.hidden=true;}
 function lsrTrainerPreview(r,clientX,clientY){
  if(!$('facilitatorDialog')?.open||lsrView!=='reports')return;
- if(!lsrTrainerPreviewNode){const node=document.createElement('div');node.className='lsr-hover-preview';node.hidden=true;node.setAttribute('role','tooltip');document.body.append(node);lsrTrainerPreviewNode=node;}
+ if(!lsrTrainerPreviewNode){const node=document.createElement('div');node.className='lsr-hover-preview';node.hidden=true;node.setAttribute('role','tooltip');$('facilitatorDialog').append(node);lsrTrainerPreviewNode=node;}
  const node=lsrTrainerPreviewNode;node.replaceChildren();
  const title=document.createElement('strong');title.textContent=r.label||r.type||'Storm report';node.append(title);
  const line=(name,val,extra='')=>{const div=document.createElement('div');div.className='preview-row '+extra;const b=document.createElement('b');b.textContent=name+': ';const span=document.createElement('span');span.textContent=val;div.append(b,span);node.append(div);};
@@ -2680,11 +2681,14 @@ function lsrTrainerPreview(r,clientX,clientY){
    :(lsrTraineeRemarks(r,false)||'None'));
  line('Delivery',lsrUiTime(lsrUiDeliveryAt(r))+' · '+(lsrUiSelected().has(r.id)?'selected':'not selected'));
  node.hidden=false;
- const margin=11,w=Math.min(360,window.innerWidth-22);
- let x=Math.max(margin,Math.min(window.innerWidth-w-margin,clientX+15));
- node.style.left=x+'px';node.style.top=margin+'px';
+ const dialog=$('facilitatorDialog'),bounds=dialog.getBoundingClientRect();
+ // Modal dialogs render in a browser top layer. Position the tooltip *inside* it,
+ // not under document.body, and clamp it within the dialog's own bounds.
+ const margin=11,w=Math.min(360,Math.max(180,bounds.width-2*margin));
+ const x=Math.max(margin,Math.min(bounds.width-w-margin,clientX-bounds.left+15));
+ node.style.width=w+'px';node.style.left=x+'px';node.style.top=margin+'px';
  const h=node.getBoundingClientRect().height;
- node.style.top=Math.max(margin,Math.min(window.innerHeight-h-margin,clientY+15))+'px';
+ node.style.top=Math.max(margin,Math.min(bounds.height-h-margin,clientY-bounds.top+15))+'px';
 }
 function lsrClosePopup(p){if(p?.lsrPopup){p.lsrPopup.remove();p.lsrPopup=null;}if(p)p.lsrPopupId=null;}
 function lsrCloseAllPopups(){for(const pane of panes)lsrClosePopup(pane);}
@@ -2847,7 +2851,8 @@ async function loadScenarioLsrs(){
   const preapproved=lsrLoadSavedPlan(ACTIVE_SCENARIO_ID,lsrArchive)||serverPlan;
   if(preapproved){lsrSelected=new Set(preapproved.selected);lsrOverrides={...preapproved.overrides};
    lsrActiveDefaultDelay=Number(preapproved.defaultDelay);$('lsrDefaultDelay').value=String(lsrActiveDefaultDelay);lsrMarkerLifetimeMinutes=lsrValidLifetime(preapproved.lifetimeMinutes)?Number(preapproved.lifetimeMinutes):60;lsrScheduleConfirmed=true;}
-  $('lsrAvailability').textContent=`${lsrArchive.length} historical LSRs loaded (${lsrSuggested.size} suggested). ${data.error?'Archive warning: '+data.error:'Event times only; original report issuance times not available.'}`;
+  const presentSources=lsrArchive.filter(r=>!!lsrOriginalSource(r)).length;
+  $('lsrAvailability').textContent=`${lsrArchive.length} historical LSRs loaded (${lsrSuggested.size} suggested). Sources preserved: ${presentSources}/${lsrArchive.length}. ${presentSources<lsrArchive.length?'Older prepared cases may lack archived source metadata. ':''}${data.error?'Archive warning: '+data.error:'Event times only; original report issuance times not available.'}`;
  }catch(e){$('lsrAvailability').textContent='Storm reports unavailable for this case: '+e.message;}
  else $('lsrAvailability').textContent='No prepared scenario selected. Load a prepared case with historical LSRs.';
  $('lsrMarkerLifetime').value=String(lsrMarkerLifetimeMinutes);
