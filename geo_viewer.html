@@ -865,6 +865,7 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
       <div class="facilitator-muted" id="facilitatorVelocityCoverage">Radar moments: checking prepared case…</div>
     </section>
     <section class="facilitator-panel" id="scenarioBuilderPanel"><h3>SCENARIO BUILDER · CONUS</h3>
+      <div class="facilitator-muted" style="margin:8px 0 13px"><a href="./scenario_builder.html" target="_blank" rel="noopener noreferrer" style="color:#9bdafa">Open guided Scenario Builder (v3.35.0.1) in a separate tab</a> · Local Python preparation service required.</div>
       <div class="facilitator-muted">Prepare archived CONUS Level II scans for training. Select a source RDA, destination radar, and training WFO. Preparation converts native moments and generates local geographic data; the backend will reject an incomplete case.</div>
       <div class="facilitator-field"><label for="scenarioSource">Historical source RDA</label><input id="scenarioSource" type="text" list="scenarioRadarList" maxlength="4" value="KLNX" autocomplete="off" spellcheck="false"><button id="scenarioPickSource" class="radar-pick-launch" type="button">⌖ Choose source on radar map…</button></div>
       <div class="facilitator-field"><label for="scenarioDestination">Simulated destination RDA</label><input id="scenarioDestination" type="text" list="scenarioRadarList" maxlength="4" value="KLNX" autocomplete="off" spellcheck="false"><button id="scenarioPickDestination" class="radar-pick-launch" type="button">⌖ Choose destination on radar map…</button></div>

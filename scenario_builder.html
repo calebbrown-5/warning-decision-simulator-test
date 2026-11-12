@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+<title>WDS · Guided Scenario Builder v3.35.0.1</title>
+<style>
+:root{color-scheme:dark;font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:#091521;color:#eaf3fa;--border:#38546c;--muted:#b5c9d9;--blue:#61b8ec;--panel:#102538;--panel2:#142e44}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh}
+header{border-bottom:1px solid #36526a;background:#0d2031}
+.header-inner{max-width:1100px;margin:auto;display:flex;justify-content:space-between;gap:20px;align-items:center;padding:24px 26px}
+header h1{font-size:25px;letter-spacing:-.02em;line-height:1.15;margin:6px 0}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#90c7e6}
+.version{font-size:12px;color:#a2c7dc}
+main{max-width:1100px;margin:auto;padding:25px 26px 65px}
+a{color:#9cdbff}
+p{margin:4px 0 12px}
+.muted{font-size:13px;color:var(--muted)}
+.alert{border:1px solid #697a80;background:#233644;border-radius:10px;padding:12px 15px;margin-bottom:18px;font-size:13px}
+.alert strong{color:#fff}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.95fr);align-items:start;gap:18px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;min-width:0}
+.panel h2{margin:0 0 7px;font-size:19px}
+.panel h3{font-size:15px;margin:18px 0 8px}
+.step-list{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 20px}
+.step{border:1px solid #40576b;background:#172b3b;border-radius:40px;padding:6px 11px;font-size:12px;color:#b3c8d8}
+.step.current{border-color:#66c6fa;background:#214661;color:#fff}
+.step.done{border-color:#397f71;background:#173e3d;color:#b2f3d3}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row.three{grid-template-columns:1fr 1fr 1fr}
+.field{margin:10px 0 14px}
+label{font-size:13px;font-weight:650;color:#e5f2fb;display:block;margin-bottom:5px}
+input,select{width:100%;min-width:0;background:#091a29;border:1px solid #627b90;color:#f1faff;border-radius:6px;font:inherit;font-size:14px;padding:10px}
+input:disabled{color:#b0bac3;opacity:.66}
+input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid #9de1ff;outline-offset:3px}
+.input-note{font-size:12px;color:#a5c5d9;margin:4px 0}
+.checkline{display:flex;gap:9px;align-items:center;font-weight:500;color:#dfedf6;margin:15px 0 7px}
+.checkline input{width:17px;height:17px;flex:none;accent-color:#6ac3f3}
+.section-break{border:0;border-top:1px solid var(--border);margin:20px 0 17px}
+.time-group{display:grid;grid-template-columns:minmax(130px,1.5fr) minmax(69px,.75fr) minmax(69px,.75fr);gap:7px}
+.time-group small{display:block;font-size:11px;color:#aec7d8;margin:0 0 4px}
+button,.button-link{font:inherit;font-weight:700;font-size:13px;cursor:pointer;padding:11px 13px;border-radius:7px;border:1px solid #7bbde8;color:#f7fbff;background:#22618b;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:hover:not(:disabled),.button-link:hover{background:#337ba9}
+button.secondary,.button-link.secondary{background:#1a3042;border-color:#5b829d}
+button:disabled{opacity:.42;cursor:not-allowed}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}
+.status{border:1px solid #536e84;background:#152e42;border-radius:9px;margin:14px 0;padding:12px 14px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.status.error{background:#482b34;border-color:#d17a84;color:#fff1f2}
+.status.ok{background:#164036;border-color:#3c997d;color:#ddffec}
+.status.working{border-color:#65a9d7}
+#downloadInfo[hidden],#finished[hidden],#localWarning[hidden],#recentLoading[hidden]{display:none}
+#downloadInfo{border:1px solid #425e71;border-radius:8px;padding:12px 13px;background:#0d2333;font-size:13px;margin:12px 0}
+#progressTrack{height:9px;border-radius:10px;background:#304a5e;overflow:hidden;margin:12px 0 5px}
+#progressFill{height:100%;width:0%;background:#75c7f1;transition:width .15s}
+.progress-meta{font-variant-numeric:tabular-nums;color:#c7dfed;font-size:12px}
+#finished{border:1px solid #3e967e;background:#153c35;border-radius:9px;padding:14px;margin-top:14px}
+#finished h3{margin:0 0 5px}
+#recentCases{display:grid;gap:10px;margin-top:14px}
+.case{border:1px solid #435f75;background:#0d2232;border-radius:8px;padding:12px 13px}
+.case strong{font-size:14px;line-height:1.35;display:block;word-break:break-word}
+.case small{display:block;font-size:12px;color:#c5d5e2;margin:4px 0 10px;overflow-wrap:anywhere}
+.case button,.case a{font-size:12px;padding:7px 10px}
+.case .case-actions{display:flex;gap:8px;flex-wrap:wrap}
+.note{font-size:12px;color:#a9c1d2;margin-top:18px}
+footer{font-size:12px;margin-top:25px;color:#a5bdcc;border-top:1px solid #324b60;padding-top:15px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.header-inner{padding:18px}.header-inner .version{display:none}main{padding:18px}}
+@media(max-width:440px){.row,.row.three{grid-template-columns:1fr}.time-group{grid-template-columns:1.4fr .75fr .75fr}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div><div class="eyebrow">Warning Decision Simulator · Training only</div><h1>Guided Scenario Builder</h1><div class="muted">Prepare historical Level II radar cases without working through the instructor radar console.</div></div><div class="version">Builder v3.35.0.1 · Simulator v3.34.5.4.4</div></div></header>
+<main>
+<div class="alert"><strong>TRAINING AND DEVELOPMENT ONLY.</strong> This builder runs on the facilitator's local computer using the existing Python preparation service. It does not publish cases to GitHub Pages or send warning decisions to Cloudflare. Historical data and exercise preparation are subject to your organization's network and data-use policies.</div>
+<div class="layout">
+<section class="panel" aria-labelledby="createTitle">
+<h2 id="createTitle">Create a historical radar case</h2>
+<p class="muted">Select the historical source and UTC window, optionally choose new training geography, then download and prepare the case.</p>
+<div class="step-list" aria-label="Preparation steps"><div class="step current" id="step1">1 · Select</div><div class="step" id="step2">2 · Discover</div><div class="step" id="step3">3 · Download</div><div class="step" id="step4">4 · Prepare</div></div>
+<div id="localWarning" class="status error" role="alert" hidden>This page is read-only when hosted publicly. Run the existing local facilitator Python backend, then open <strong>http://127.0.0.1:8765/scenario_builder.html</strong> on that computer. The public GitHub Pages simulator cannot prepare radar archives.</div>
+<div class="row">
+ <div class="field"><label for="source">Historical radar (RDA)</label><input id="source" list="radarCatalog" maxlength="4" value="KLNX" autocomplete="off" spellcheck="false" aria-describedby="sourceHint"><div id="sourceHint" class="input-note">Four-letter radar ID, e.g. KLNX</div></div>
+ <div class="field"><label for="wfo">Training WFO</label><input id="wfo" list="wfoCatalog" maxlength="3" value="LBF" autocomplete="off" spellcheck="false"><div class="input-note">Three-letter office ID, e.g. LBF</div></div>
+</div>
+<datalist id="radarCatalog"></datalist><datalist id="wfoCatalog"></datalist>
+<label class="checkline" for="relocate"><input type="checkbox" id="relocate"> Relocate the historical event to a different radar</label>
+<div class="field"><label for="destination">Simulated destination radar</label><input id="destination" list="radarCatalog" maxlength="4" value="KLNX" disabled autocomplete="off" spellcheck="false"><div class="input-note">When relocation is off, the original radar geography is retained. In this release, choose a new destination <strong>before downloading</strong>; reusing one raw archive for several destinations is planned for a later update.</div></div>
+<hr class="section-break">
+<div class="row">
+ <div class="field"><label>Start (UTC, 24-hour)</label><div class="time-group"><div><small>Date</small><input type="date" id="startDate" aria-label="Start date UTC"></div><div><small>Hour</small><select id="startHour" aria-label="Start hour UTC"></select></div><div><small>Minute</small><select id="startMinute" aria-label="Start minute UTC"></select></div></div></div>
+ <div class="field"><label>End (UTC, 24-hour)</label><div class="time-group"><div><small>Date</small><input type="date" id="endDate" aria-label="End date UTC"></div><div><small>Hour</small><select id="endHour" aria-label="End hour UTC"></select></div><div><small>Minute</small><select id="endMinute" aria-label="End minute UTC"></select></div></div></div>
+</div>
+<p class="input-note">All times are UTC, not your computer's time zone. The window must be greater than zero and no longer than six hours. Archive availability depends on the selected RDA and date.</p>
+<div class="actions"><button id="discover" type="button" disabled>1. Check available radar scans</button><button id="download" type="button" disabled>2. Download scans</button><button id="prepare" type="button" disabled>3. Prepare playable case</button></div>
+<div id="downloadInfo" hidden aria-live="polite"></div>
+<div id="status" class="status" role="status" aria-live="polite">Connecting to the local scenario preparation service…</div>
+<div id="progressTrack" role="progressbar" aria-label="Scenario preparation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progressFill"></div></div><div id="progressText" class="progress-meta">No background job active.</div>
+<div id="finished" hidden><h3>Prepared case is ready</h3><p id="finishedNote" class="muted">Review LSR selections before running a coordinated exercise.</p><a class="button-link" id="openCase" href="#">Open case in local simulator</a></div>
+<p class="note">The Python server must remain open while downloading/converting. A raw download is not playable until preparation completes. No operational warning endpoints are used.</p>
+</section>
+<aside class="panel" aria-labelledby="recentTitle"><h2 id="recentTitle">Previously prepared cases</h2><p class="muted">A simple list of local cases and incomplete downloads—no separate repository or database to maintain.</p><div class="actions"><button class="secondary" id="refreshCases" type="button" disabled>Refresh case list</button></div><div class="muted" id="recentLoading" hidden>Loading local cases…</div><div id="recentCases"><p class="muted">Connect to the local builder to view cases.</p></div><p class="note">Prepared cases open in the existing simulator. Downloaded-only cases can reuse the saved historical selections and be converted without another archive download.</p><hr class="section-break"><h3>After preparation</h3><p class="muted">Use the simulator's facilitator report selector to review LSRs and configure the exercise. Publishing to GitHub Pages still uses the existing <code>EXPORT_STATIC_CASE.py</code> workflow; it is not automatic in this release.</p><a class="button-link secondary" href="./index.html">Back to simulator home</a></aside>
+</div>
+<footer>WDS v3.35.0.1 builder · Localhost-only preparation API · Existing Cloudflare clock-only coordinator unchanged · Browser-local warning decisions unchanged.</footer>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const LOCAL=location.protocol==='http:'&&location.hostname==='127.0.0.1';
+const ID_RE=/^[0-9a-f]{16}$/;
+let catalog=null,discovery=null,rawReady=null,jobKind=null,jobSpec=null,serverBusy=false,working=false;
+function makeHours(){for(const part of ['Hour','Minute'])for(const edge of ['start','end']){const el=$(edge+part),count=part==='Hour'?24:60;for(let v=0;v<count;v++){const option=document.createElement('option');option.value=String(v).padStart(2,'0');option.textContent=option.value;el.append(option);}el.value=part==='Minute'?'00':edge==='start'?'18':'21';}}
+function setStatus(msg,tone=''){const el=$('status');el.textContent=String(msg);el.className='status'+(tone?' '+tone:'');}
+function setProgress(done,total,text){const pct=total>0?Math.max(0,Math.min(100,Math.round(done/total*100))):0;$('progressFill').style.width=pct+'%';$('progressTrack').setAttribute('aria-valuenow',String(pct));$('progressText').textContent=text;}
+function setSteps(n){for(let i=1;i<=4;i++)$('step'+i).className='step'+(i<n?' done':i===n?' current':'');}
+function jobLocked(b){serverBusy=!!b;for(const id of ['source','wfo','relocate','startDate','startHour','startMinute','endDate','endHour','endMinute'])$(id).disabled=b;$('destination').disabled=b||!$('relocate').checked;enableButtons();}
+function enableButtons(){const available=LOCAL&&!!catalog&&!serverBusy&&!working;
+ $('discover').disabled=!available;
+ $('download').disabled=!available||!discovery;
+ $('prepare').disabled=!available||!rawReady;
+ $('refreshCases').disabled=!available;
+}
+function invalidate(){if(serverBusy)return;discovery=null;rawReady=null;$('downloadInfo').hidden=true;$('finished').hidden=true;setSteps(1);enableButtons();}
+function encodeTime(edge){const date=$(edge+'Date').value,h=$(edge+'Hour').value,m=$(edge+'Minute').value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!/^([01]\d|2[0-3])$/.test(h)||!/^[0-5]\d$/.test(m))throw Error('Enter a complete UTC date, hour, and minute for both endpoints.');
+ const text=`${date}T${h}:${m}Z`,ms=Date.parse(text);
+ if(!Number.isFinite(ms)||new Date(ms).toISOString().slice(0,16)!==`${date}T${h}:${m}`)throw Error('Invalid UTC date/time.');
+ return text;
+}
+function specFromForm(){const source=$('source').value.trim().toUpperCase(),wfo=$('wfo').value.trim().toUpperCase();
+ const destination=$('relocate').checked?$('destination').value.trim().toUpperCase():source;
+ if(!/^K[A-Z]{3}$/.test(source)||!/^K[A-Z]{3}$/.test(destination)||!/^[A-Z]{3}$/.test(wfo))throw Error('Enter valid four-letter K radar IDs and a three-letter WFO ID.');
+ if(!catalog||!catalog.radars.some(s=>s.id===source)||!catalog.radars.some(s=>s.id===destination))throw Error('Choose source and destination sites listed in the local radar catalog.');
+ if(!catalog.wfos.includes(wfo))throw Error('Choose a WFO listed in the local catalog.');
+ const start=encodeTime('start'),end=encodeTime('end'),first=Date.parse(start),last=Date.parse(end);
+ if(first> Date.now()||first<Date.UTC(1991,0,1))throw Error('Select an archived UTC date from 1991 through the present.');
+ if(!(last>first&&last-first<=6*3600000))throw Error('The UTC window must be positive and no longer than six hours.');
+ return {source,destination,wfo,start,end};
+}
+const sameSpec=(a,b)=>a&&b&&JSON.stringify(a)===JSON.stringify(b);
+async function api(path,method='GET',body){if(!LOCAL)throw Error('Archive preparation is only available at the local 127.0.0.1 training server.');
+ const controller=new AbortController(),t=setTimeout(()=>controller.abort(),method==='GET'?18000:60000);
+ try{const response=await fetch(path,{method,cache:'no-store',headers:method==='POST'?{'Content-Type':'application/json','X-Training-Request':'scenario-builder-v1'}:undefined,body:method==='POST'?JSON.stringify(body):undefined,signal:controller.signal});
+ let result={};try{result=await response.json();}catch{throw Error('Backend returned a non-JSON response (HTTP '+response.status+').');}
+ if(!response.ok)throw Error(String(result.error||'HTTP '+response.status));return result;
+ }finally{clearTimeout(t);}
+}
+function showDiscovery(d){const box=$('downloadInfo');box.replaceChildren();const s=document.createElement('strong');s.textContent=`${d.scanCount} radar scans found`;const t=document.createElement('p');t.className='muted';t.textContent=`Estimated ${(d.totalBytes/(1024*1024)).toFixed(1)} MB · ${d.first} through ${d.last}. Download is a separate step; scans are not playable until converted.`;box.append(s,t);box.hidden=false;}
+async function discover(){try{working=true;enableButtons();const spec=specFromForm();setStatus('Checking the historical Level II archive for '+spec.source+'…','working');setSteps(2);
+ const result=await api('/api/scenario/discover','POST',spec);if(!Number.isInteger(result.scanCount)||result.scanCount<1||!Number.isFinite(result.totalBytes))throw Error('Unexpected discovery response from local server.');
+ discovery={spec,overview:result};rawReady=null;showDiscovery(result);setStatus('Archive discovery complete. Review the count and download the raw scans.','ok');
+ }catch(e){discovery=null;setStatus('Discovery failed: '+e.message,'error');setSteps(1);}finally{working=false;enableButtons();}}
+async function download(){if(!discovery)return;try{working=true;enableButtons();if(!sameSpec(specFromForm(),discovery.spec))throw Error('Selections changed since discovery; check available scans again.');
+ const started=await api('/api/scenario/download','POST',discovery.spec);if(started.state!=='downloading')throw Error('Backend did not start the download.');jobKind='download';jobSpec=discovery.spec;rawReady=null;jobLocked(true);setSteps(3);setStatus('Downloading historical radar scans on the local computer…','working');
+ }catch(e){setStatus('Download failed to start: '+e.message,'error');}finally{working=false;enableButtons();}}
+async function prepare(){if(!rawReady)return;try{working=true;enableButtons();if(!sameSpec(specFromForm(),rawReady))throw Error('Selections differ from the cached download. Use the saved case settings or download the desired case.');
+ const started=await api('/api/scenario/prepare','POST',rawReady);if(started.state!=='preparing')throw Error('Backend did not start preparation.');jobKind='prepare';jobSpec=rawReady;jobLocked(true);setSteps(4);setStatus('Converting radar moments, building geography, and preparing historical reports…','working');
+ }catch(e){setStatus('Preparation failed to start: '+e.message,'error');}finally{working=false;enableButtons();}}
+function populateChoices(){for(const [id,records,label] of [['radarCatalog',catalog.radars,r=>r.id+' · '+String(r.name||'')],['wfoCatalog',catalog.wfos,r=>r]]){$(id).replaceChildren();for(const r of records){const option=document.createElement('option');option.value=typeof r==='string'?r:r.id;option.label=label(r);$(id).append(option);}}}
+function setTime(edge,stamp){const m=String(stamp).match(/^(\d{4}-\d\d-\d\d)T(\d\d):(\d\d)/);if(!m)throw Error('Cached case has invalid UTC time.');$(edge+'Date').value=m[1];$(edge+'Hour').value=m[2];$(edge+'Minute').value=m[3];}
+function useCachedCase(spec){if(serverBusy)return;try{
+ const s={source:String(spec.source||'').toUpperCase(),destination:String(spec.destination||'').toUpperCase(),wfo:String(spec.wfo||'').toUpperCase(),start:spec.start,end:spec.end};
+ if(!catalog.radars.some(r=>r.id===s.source)||!catalog.radars.some(r=>r.id===s.destination)||!catalog.wfos.includes(s.wfo))throw Error('Site catalog does not include all of this case’s radar/WFO IDs.');
+ $('source').value=s.source;$('wfo').value=s.wfo;$('relocate').checked=s.source!==s.destination;$('destination').value=s.destination;$('destination').disabled=!$('relocate').checked;setTime('start',s.start);setTime('end',s.end);
+ invalidate();const canonical=specFromForm();rawReady=canonical;setSteps(3);setStatus('Existing raw archive selected. You can prepare it without another download.','ok');enableButtons();window.scrollTo({top:0,behavior:'smooth'});
+ }catch(e){setStatus('Could not load cached settings: '+e.message,'error');}}
+function validPath(p){return /^\/geo_viewer\.html\?case=[0-9a-f]{16}$/.test(String(p||''));}
+function showFinished(path){if(!validPath(path))return;$('openCase').href='.'+path;$('finished').hidden=false;$('finishedNote').textContent='The case is locally playable. Open it to review LSRs and configure an exercise. Publishing to GitHub Pages remains a separate export step.';setSteps(4);}
+async function loadCases(){if(!catalog||serverBusy)return;$('recentLoading').hidden=false;
+ try{const result=await api('/api/scenario/library');const items=Array.isArray(result.items)?result.items:[];const root=$('recentCases');root.replaceChildren();
+ if(!items.length){const msg=document.createElement('p');msg.className='muted';msg.textContent='No prepared or downloaded cases found on this computer.';root.append(msg);return;}
+ for(const c of items.slice(0,18)){if(!ID_RE.test(c.id))continue;const box=document.createElement('div');box.className='case';const name=document.createElement('strong');name.textContent=String(c.name||c.id).slice(0,130);box.append(name);
+ const details=document.createElement('small');details.textContent=`${c.source||'—'} → ${c.destination||'—'} · ${c.wfo||'—'} · ${String(c.start||'').slice(0,16)} UTC · ${c.volumeCount||0} scans · ${c.state||'—'}`;box.append(details);
+ const actions=document.createElement('div');actions.className='case-actions';
+ if(c.state==='PLAYABLE'&&validPath(c.launchPath)){const a=document.createElement('a');a.className='button-link secondary';a.textContent='Open prepared case';a.href='.'+c.launchPath;actions.append(a);}
+ if(c.state==='DOWNLOADED'&&c.spec&&typeof c.spec==='object'){const b=document.createElement('button');b.className='secondary';b.type='button';b.textContent='Use cached settings';b.addEventListener('click',()=>useCachedCase(c.spec));actions.append(b);}
+ if(actions.children.length){box.append(actions);root.append(box);}
+ }if(!root.children.length){const msg=document.createElement('p');msg.className='muted';msg.textContent='No supported local cases found.';root.append(msg);}
+ }catch(e){setStatus('Could not refresh existing cases: '+e.message,'error');}
+ finally{$('recentLoading').hidden=true;}}
+async function pollStatus(){if(!catalog)return;
+ try{const data=await api('/api/scenario/status');const state=String(data.state||'idle');if(state==='downloading'||state==='preparing'){
+ jobLocked(true);const n=Math.max(0,Number(data.completed)||0),d=Math.max(0,Number(data.total)||0);setProgress(n,d,`${state.toUpperCase()} · ${n}/${d||'—'} · ${String(data.message||'Working').slice(0,250)}`);
+ setStatus((jobKind?'Your':'An existing')+' local '+state+' job is running. '+String(data.message||''),'working');return;}
+ if(serverBusy)jobLocked(false);if(state==='downloaded'){
+ setProgress(1,1,'Raw radar archive downloaded. Preparation required.');
+ if(jobKind==='download'&&jobSpec){rawReady=jobSpec;setSteps(3);setStatus('Download complete. Select “Prepare playable case” to convert the cached radar and add geography.','ok');jobKind=null;jobSpec=null;await loadCases();}
+ else if(!jobKind)setStatus('The local backend has a completed raw download. Select its cached settings from the case list to prepare it.','ok');
+ }else if(state==='prepared'){
+ setProgress(1,1,'Last preparation completed.');
+ if(jobKind==='prepare'){setStatus('Preparation complete. Review the case and its report settings before exercising.','ok');showFinished(data.launchPath);jobKind=null;jobSpec=null;await loadCases();}
+ else if(!jobKind&&validPath(data.launchPath)){showFinished(data.launchPath);setStatus('The local backend has a prepared case ready to open.','ok');}
+ }else if(state==='error'){
+ setProgress(0,0,'The backend reports a failed job. Downloaded scans, if any, are not automatically deleted.');
+ if(jobKind){jobKind=null;jobSpec=null;}setStatus('Backend error: '+String(data.message||'Check the server terminal.'),'error');await loadCases();
+ }else if(state==='idle'){setProgress(0,0,'No background job active.');}
+ enableButtons();
+ }catch(e){jobLocked(true);setStatus('Lost connection to the local preparation backend: '+e.message,'error');}}
+async function initialize(){makeHours();$('source').addEventListener('input',()=>{if(!$('relocate').checked)$('destination').value=$('source').value.trim().toUpperCase();invalidate();});
+ $('wfo').addEventListener('input',invalidate);$('destination').addEventListener('input',invalidate);
+ $('relocate').addEventListener('change',()=>{$('destination').disabled=!$('relocate').checked;if(!$('relocate').checked)$('destination').value=$('source').value.trim().toUpperCase();else if($('destination').value.trim().toUpperCase()===$('source').value.trim().toUpperCase())$('destination').value='KLNX';invalidate();});
+ for(const id of ['startDate','startHour','startMinute','endDate','endHour','endMinute'])$(id).addEventListener('change',invalidate);
+ $('discover').addEventListener('click',discover);$('download').addEventListener('click',download);$('prepare').addEventListener('click',prepare);$('refreshCases').addEventListener('click',loadCases);
+ if(!LOCAL){$('localWarning').hidden=false;setStatus('Hosted preview only. Scenario preparation requires the local facilitator server at 127.0.0.1.','error');enableButtons();return;}
+ try{catalog=await api('/api/scenario/catalog');if(!Array.isArray(catalog.radars)||!Array.isArray(catalog.wfos))throw Error('Unexpected radar/WFO catalog.');populateChoices();setStatus(`Local backend connected · ${catalog.radars.length} radar sites (${catalog.catalogStatus||'unknown'} catalog). Enter historical UTC times to begin.`,'ok');enableButtons();await loadCases();await pollStatus();}
+ catch(e){catalog=null;setStatus('Cannot connect to local builder API: '+e.message+'. Start START_FACILITATOR_BUILDER_WINDOWS.bat in the original simulator folder, then refresh this page.','error');enableButtons();}
+ if(catalog)setInterval(pollStatus,2200);
+}
+initialize();
+</script>
+</body></html>
