@@ -1,0 +1,10 @@
+
+# WDS instructor raw/reference caches; never commit generated radar cases by default
+scenario_cache/
+reference_cache/
+.venv-wds/
+web_data/scenarios/
+
+# Python bytecode
+__pycache__/
+*.py[cod]

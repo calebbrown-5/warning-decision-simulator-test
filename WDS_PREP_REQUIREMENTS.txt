@@ -1,0 +1,5 @@
+# Level II decoder and validated official GIS, in an isolated Codespaces venv.
+arm_pyart>=2.2,<2.4
+numpy>=1.26,<3
+netCDF4>=1.6,<2
+shapely>=2.0,<3

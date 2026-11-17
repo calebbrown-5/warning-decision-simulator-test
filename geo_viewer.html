@@ -1325,7 +1325,8 @@ button,select,input{font:inherit;color:var(--fg);background:#172638;border:1px s
 </dialog>
 
 <script>
-const HOSTED_STATIC=true;
+const HOSTED_STATIC=!( (location.protocol==='http:'&&location.hostname==='127.0.0.1') ||
+  (location.protocol==='https:'&&/^[a-z0-9-]+-8765\.app\.github\.dev$/.test(location.hostname)) );
 /* v3.30 Verification Foundation — TRAINING ONLY. Pure, deterministic, no network or product issuance.
    COW-inspired event/report matching, NOT bit-for-bit IEM COW parity.
    See README_V330.txt for assumptions and limits. */
